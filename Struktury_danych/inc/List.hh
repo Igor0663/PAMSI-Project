@@ -1,29 +1,8 @@
 #ifndef _LIST_HH
 #define _LIST_HH
 
-template<typename T>
-struct Node
-{
-	Node* next;
-	T value;
-
-	Node(Node* StartPtr = nullptr): next(StartPtr) {}
-	Node(Node* StartPtr, const T& StartValue):next(StartPtr), value(StartValue) {}
-};
-
-template<typename T>
-class Iterator
-{
-		Node<T>* node;
-	public:
-		Iterator( Node<T>* NewNode): node(NewNode){}
-	//	~Iterator();
-		Iterator&     operator++();
-		Iterator      operator++(int);
-		T	      operator*() const;
-		Iterator&     operator=(const Iterator& It);
-		bool          operator!=(const Iterator& It) const;
-};
+#include"Node.hh"
+#include"List_Iterator.hh"
 
 template<typename T>
 class List

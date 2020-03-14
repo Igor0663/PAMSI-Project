@@ -3,12 +3,12 @@
 
 int main()
 {
-	 List<int> kokos;
-	kokos.push_back(1);
-	kokos.push_back(3);
-	kokos.push_back(4);
-	kokos.insert(2, 1);
-	for(Iterator<int> it=kokos.begin();it!=kokos.end();it++)
-		printf("%d ", *it);
+	List<char> kokos;
+	kokos.push_back('a');
+	kokos.push_back('c');
+	kokos.push_back('d');
+	kokos.insert('b', 1);
+	for(Iterator<char> it=kokos.begin();it!=kokos.end();it++)
+		printf("%c ", *it);
 	return 0;
 }

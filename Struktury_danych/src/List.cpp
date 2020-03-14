@@ -92,10 +92,10 @@ T& List<T>::operator[](unsigned int ind)
 	if(ind>=this->size())
 		return head->value;
 		//DODAJ WYJATEK
-	Node<T>* ptr = head;
+	Iterator<T> ptr = this->begin();
 	for(unsigned int i=0;i<ind;i++)
-		ptr = ptr->next;
-	return ptr->value;
+		ptr++;
+	return *ptr;
 }
 
 template< typename T>
@@ -104,10 +104,10 @@ const T& List<T>::operator[](unsigned int ind) const
 	if(ind>=this->size())
 		return head->value;
 		//DODAJ WYJATEK
-	Node<T>* ptr = head;
+	Iterator<T> ptr = this->begin();
 	for(unsigned int i=0;i<ind;i++)
-		ptr = ptr->next;
-	return ptr->value;
+		ptr++;
+	return *ptr;
 }
 
 template< typename T>
@@ -121,35 +121,3 @@ Iterator<T> List<T>::end()
 	return Iterator<T>(nullptr);
 }
 
-template< typename T>
-bool Iterator<T>::operator!=(const Iterator& It) const
-{
-	return this->node != It.node;
-}
-
-template< typename T >
-Iterator<T>& Iterator<T>::operator++()
-{
-	this->node = this->node->getPtr();
-	return *this;
-}
-
-template< typename T >
-Iterator<T> Iterator<T>::operator++(int)
-{
-	Iterator<T> tmp = *this;
-	this->node = this->node->next;
-	return tmp;
-}
-
-template< typename T >
-T Iterator<T>::operator*() const
-{
-	return node->value;
-}
-template<typename T>
-Iterator<T>& Iterator<T>::operator=(const Iterator& It)
-{
-	this-> node = It -> node;
-	return *this;
-}
