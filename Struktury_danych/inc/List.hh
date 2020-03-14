@@ -2,17 +2,27 @@
 #define _LIST_HH
 
 template<typename T>
-class Node
+struct Node
 {
-		Node* next;
-		T value;
+	Node* next;
+	T value;
+
+	Node(Node* StartPtr = nullptr): next(StartPtr) {}
+	Node(Node* StartPtr, const T& StartValue):next(StartPtr), value(StartValue) {}
+};
+
+template<typename T>
+class Iterator
+{
+		Node<T>* node;
 	public:
-		Node(Node* StartPtr = nullptr): next(StartPtr) {}
-		Node(Node* StartPtr, const T& StartValue):next(StartPtr), value(StartValue) {}
-		Node* getPtr() const {return this->next; }
-		void setPtr(Node* Ptr){this-> next = Ptr;}
-		const T& getValue() const {return this->value; }
-		T& getValue(){return this->value;}
+		Iterator( Node<T>* NewNode): node(NewNode){}
+	//	~Iterator();
+		Iterator&     operator++();
+		Iterator      operator++(int);
+		T	      operator*() const;
+		Iterator&     operator=(const Iterator& It);
+		bool          operator!=(const Iterator& It) const;
 };
 
 template<typename T>
@@ -30,10 +40,10 @@ class List
 		void pop_front();
 		void insert(const T& NewElement, unsigned int index);
 		//void remove(const T& element);
-		//Iterator begin();
-		//Iterator end();
-		//ConstIterator cbegin();
-		//ConstIterator cend();
+		Iterator<T> begin();
+		Iterator<T> end();
+		//ConstIterator<T> cbegin();
+		//ConstIterator<T> cend();
 		T& operator[](unsigned int index);
 		const T& operator[](unsigned int index) const;
 		bool empty(){ return this->head == nullptr;}

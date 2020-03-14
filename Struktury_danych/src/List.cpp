@@ -7,7 +7,7 @@ void List<T>::push_back(const T& NewValue)
 	if(this->empty())
 		head = temp;
 	else
-		tail->setPtr(temp);
+		tail->next = temp;
 	tail = temp;
 	this->NoE++;
 	return;
@@ -29,7 +29,7 @@ void List<T>::pop_front()
 {
 	if(this->empty())
 		return;
-	Node<T>* temp = head->getPtr();
+	Node<T>* temp = head->next;
 	delete head;
 	head = temp;
 	if(this->empty())
@@ -44,13 +44,13 @@ void List<T>::pop_back()
 		return;
 	Node<T>* curr = head;
 	Node<T>* prev = nullptr;
-	while(curr->getPtr()!=nullptr)
+	while(curr->next != nullptr)
 	{
 		prev = curr;
-		curr = curr -> getPtr();
+		curr = curr -> next;
 	}
 	tail = prev;
-	prev->setPtr(nullptr);
+	prev->next = nullptr;
 	delete curr;
 	NoE--;
 	return;
@@ -71,10 +71,10 @@ void List<T>::insert(const T& NewElement, unsigned int index)
 		for(unsigned int i = 0;i < index;i++)
 		{
 			prev = curr;
-			curr = curr -> getPtr();
+			curr = curr -> next;
 		}
 		Node<T>* New = new Node<T>(curr, NewElement);
-		prev->setPtr(New);
+		prev->next = New;
 		NoE++;
 		return;
 	}
@@ -90,22 +90,66 @@ template< typename T>
 T& List<T>::operator[](unsigned int ind)
 {
 	if(ind>=this->size())
-		return head->getValue();
+		return head->value;
 		//DODAJ WYJATEK
 	Node<T>* ptr = head;
 	for(unsigned int i=0;i<ind;i++)
-		ptr = ptr->getPtr();
-	return ptr->getValue();
+		ptr = ptr->next;
+	return ptr->value;
 }
 
 template< typename T>
 const T& List<T>::operator[](unsigned int ind) const 
 {
 	if(ind>=this->size())
-		return head->getValue();
+		return head->value;
 		//DODAJ WYJATEK
 	Node<T>* ptr = head;
 	for(unsigned int i=0;i<ind;i++)
-		ptr = ptr->getPtr();
-	return ptr->getValue();
+		ptr = ptr->next;
+	return ptr->value;
+}
+
+template< typename T>
+Iterator<T> List<T>::begin()
+{
+	return Iterator<T>(this->head);
+}
+template< typename T>
+Iterator<T> List<T>::end()
+{
+	return Iterator<T>(nullptr);
+}
+
+template< typename T>
+bool Iterator<T>::operator!=(const Iterator& It) const
+{
+	return this->node != It.node;
+}
+
+template< typename T >
+Iterator<T>& Iterator<T>::operator++()
+{
+	this->node = this->node->getPtr();
+	return *this;
+}
+
+template< typename T >
+Iterator<T> Iterator<T>::operator++(int)
+{
+	Iterator<T> tmp = *this;
+	this->node = this->node->next;
+	return tmp;
+}
+
+template< typename T >
+T Iterator<T>::operator*() const
+{
+	return node->value;
+}
+template<typename T>
+Iterator<T>& Iterator<T>::operator=(const Iterator& It)
+{
+	this-> node = It -> node;
+	return *this;
 }
