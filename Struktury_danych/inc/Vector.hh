@@ -12,6 +12,7 @@ class Vector
 		unsigned int NoE;
 	public:
 		Vector();
+		Vector(const Vector<int>& NewVec);
 		Vector(std::initializer_list<T> list);
 		~Vector();
 		bool empty() const {return this->NoE == 0;}

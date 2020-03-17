@@ -1,4 +1,6 @@
 #include<algorithm>
+#include<iostream>
+#include<exception>
 
 template<typename T>
 Vector<T>::Vector()
@@ -17,6 +19,15 @@ Vector<T>::Vector(std::initializer_list<T> list)
 	for(auto it = list.begin(); it != list.end(); it++)
 		this->push_back(*it);
 }
+template<typename T>
+Vector<T>::Vector(const Vector<int>& NewVec)
+{
+	this->Cap = NewVec.Cap;
+	this->NoE = NewVec.NoE;
+	this->array = new T[Cap];
+	for(unsigned int i = 0; i < NewVec.size();i++)
+		this->array[i] = NewVec[i];
+}
 
 template<typename T>
 Vector<T>::~Vector()
@@ -27,13 +38,33 @@ Vector<T>::~Vector()
 template<typename T>
 T& Vector<T>::operator[](unsigned int index)
 {
-	return array[index];
+	try
+	{
+		if(index >= this->NoE)
+			throw std::out_of_range("Operator []. Index too large.");
+		return array[index];
+	}
+	catch(std::out_of_range& oor)
+	{
+		std::cerr << "Vector out of range error: " << oor.what() << "\n";
+		exit(1);
+	}
 }
 
 template<typename T>
 const T& Vector<T>::operator[](unsigned int index) const
 {
-	return array[index];
+	try
+	{
+		if(index >= this->NoE)
+			throw std::out_of_range("Operator []. Index too large.");
+		return array[index];
+	}
+	catch(std::out_of_range& oor)
+	{
+		std::cerr << "Vector out of range error: " << oor.what() << "\n";
+		exit(1);
+	}
 }
 
 template<typename T>
@@ -52,17 +83,27 @@ void Vector<T>::resize(unsigned int newsize)
 template<typename T>
 void Vector<T>::pop_back()
 {
-	if(this->NoE - 1 <= this->Cap * 25 / 100 && this->Cap >=64)		
-		this->resize( this->Cap/2);
-	this->NoE--;
-	return;
+	try
+	{
+		if(NoE == 0)
+			throw std::range_error("Trying to pop empty Vector");
+		if(this->NoE - 1 <= this->Cap * 25 / 100 && this->Cap >=64)		
+			this->resize( this->Cap/2);
+		this->NoE--;
+		return;
+	}
+	catch (std::range_error& oor)
+	{
+		std::cerr << "Vector range error: " << oor.what() << "\n";
+		exit(2);
+	}
 }
 
 template<typename T>
 void Vector<T>::push_back(const T& NewElement)
 {
 	if(this->NoE+1 >= this->Cap)
-		this->resize(2 * this->Cap);
+		this->resize(std::max(2 * this->Cap, (unsigned int)(1)));
 	this->array[NoE] = NewElement;
 	this->NoE++;
 	return;
