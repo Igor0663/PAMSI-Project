@@ -29,33 +29,49 @@ void List<T>::push_front(const T& NewValue)
 template< typename T >
 void List<T>::pop_front()
 {
-	if(this->empty())
+	try
+	{
+		if(this->empty())
+			throw std::range_error("Trying to pop empty list");
+		List<T>::Node* temp = head->next;
+		delete head;
+		head = temp;
+		if(this->empty())
+			tail = nullptr;
+		this->NoE--;
 		return;
-	List<T>::Node* temp = head->next;
-	delete head;
-	head = temp;
-	if(this->empty())
-		tail = nullptr;
-	this->NoE--;
-	return;
+	}
+	catch (std::range_error& oor)
+	{
+		std::cerr << "List range error: " << oor.what() << "\n";
+		exit(2);
+	}
 }
 template< typename T >
 void List<T>::pop_back()
 {
-	if(this->empty())
-		return;
-	List<T>::Node* curr = head;
-	List<T>::Node* prev = nullptr;
-	while(curr->next != nullptr)
+	try
 	{
-		prev = curr;
-		curr = curr -> next;
+		if(this->empty())
+			throw std::range_error("Trying to pop empty list");
+		List<T>::Node* curr = head;
+		List<T>::Node* prev = nullptr;
+		while(curr->next != nullptr)
+		{
+			prev = curr;
+			curr = curr -> next;
+		}
+		tail = prev;
+		prev->next = nullptr;
+		delete curr;
+		NoE--;
+		return;
 	}
-	tail = prev;
-	prev->next = nullptr;
-	delete curr;
-	NoE--;
-	return;
+	catch (std::range_error& oor)
+	{
+		std::cerr << "List range error: " << oor.what() << "\n";
+		exit(2);
+	}
 }
 template<typename T>
 void List<T>::insert(const T& NewElement, unsigned int index)
