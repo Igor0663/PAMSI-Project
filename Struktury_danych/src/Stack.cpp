@@ -14,7 +14,7 @@ Stack<T>::Stack(const Stack<T>& stack)
 }
 
 template<typename T>
-Stack<T>::Stack(std::initializer_list<T> list)
+Stack<T>::Stack(const std::initializer_list<T>& list)
 {
 	head = nullptr;
 	NoE = 0;

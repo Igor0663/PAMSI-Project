@@ -38,7 +38,7 @@ class Stack{
 			bool		operator!=(const const_iterator& It) const;
 		};
 		Stack(){head = nullptr; NoE=0;}
-		Stack(std::initializer_list<T> list);
+		Stack(const std::initializer_list<T>& list);
 		Stack(const Stack<T>& list);
 		~Stack();
 		iterator begin(){return Stack<T>::iterator(this->head);}

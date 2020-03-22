@@ -40,7 +40,7 @@ class List
 		};
 		
 		List(){head = nullptr; tail=nullptr; NoE=0;}
-		List(std::initializer_list<T> list);
+		List(const std::initializer_list<T>& list);
 		List(const List<T>& list);
 		~List();
 		void push_back(const T& NewElement);
@@ -49,6 +49,7 @@ class List
 		void pop_front();
 		void insert(const T& NewElement, unsigned int index);
 		void remove(const T& element);
+		void remove_by_index( unsigned int index);
 		iterator begin(){return List<T>::iterator(this->head);}
 		iterator end(){return List<T>::iterator(nullptr);}
 		const_iterator cbegin() const {return List<T>::const_iterator(this->head);}

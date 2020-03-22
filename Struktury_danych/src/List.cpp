@@ -119,7 +119,7 @@ List<T>::List(const List<T>& list)
 }
 
 template<typename T>
-List<T>::List(std::initializer_list<T> list)
+List<T>::List( const std::initializer_list<T>& list)
 {
 	head = nullptr;
 	tail = nullptr;
@@ -181,7 +181,7 @@ void List<T>::remove(const T& NewElement)
 	while(!(this->empty()) && (*this)[0] == NewElement)
 		this->pop_front();
 	
-	curr = head;
+	curr = this->head;
 	prev = nullptr;
 
 	while(curr != nullptr)
@@ -196,5 +196,42 @@ void List<T>::remove(const T& NewElement)
 		prev = curr;
 		curr = curr->next;
 	}
+	return;
+}
+
+template<typename T>
+void List<T>::remove_by_index( unsigned int index)
+{
+	List<T>::Node* curr;
+	List<T>::Node* prev;
+	if(index == 0)
+	{
+		this->pop_front();
+		return;
+	}
+	if(index == this->size() - 1)
+	{
+		this->pop_back();
+		return;
+	}
+	try
+	{
+		if(index >= this->size())
+			throw std::out_of_range("Remove by index method. Index too large");
+	}
+	catch (std::out_of_range& oor)
+	{
+		std::cerr << "List out of range error: " << oor.what() << "\n";
+		exit(1);
+	}
+	curr = this->head;
+	prev = nullptr;
+	for(unsigned int i = 0; i < index;i ++)
+	{
+		prev = curr;
+		curr = curr->next;
+	}
+	prev->next = curr->next;
+	delete curr;
 	return;
 }

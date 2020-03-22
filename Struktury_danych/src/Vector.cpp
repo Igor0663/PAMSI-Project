@@ -11,7 +11,7 @@ Vector<T>::Vector()
 }
 
 template<typename T>
-Vector<T>::Vector(std::initializer_list<T> list)
+Vector<T>::Vector(const std::initializer_list<T>& list)
 {
 	Cap = 32;
 	NoE = 0;

@@ -12,7 +12,7 @@ Queue<T>::Queue(const Queue<T>& list)
 }
 
 template<typename T>
-Queue<T>::Queue(std::initializer_list<T> list)
+Queue<T>::Queue(const std::initializer_list<T>& list)
 {
 	head = nullptr;
 	tail = nullptr;

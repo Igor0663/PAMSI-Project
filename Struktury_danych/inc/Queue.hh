@@ -41,7 +41,7 @@ class Queue{
 		const_iterator cbegin() const {return Queue<T>::const_iterator(this->head);}
 		const_iterator cend() const {return Queue<T>::const_iterator(nullptr);}
 		Queue(){head = nullptr; tail=nullptr; NoE=0;}
-		Queue(std::initializer_list<T> list);
+		Queue(const std::initializer_list<T>& list);
 		Queue(const Queue<T>& list);
 		~Queue();
 		void push(const T& NewElement);

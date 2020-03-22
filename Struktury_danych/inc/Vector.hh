@@ -13,7 +13,7 @@ class Vector
 	public:
 		Vector();
 		Vector(const Vector<int>& NewVec);
-		Vector(std::initializer_list<T> list);
+		Vector(const std::initializer_list<T>& list);
 		~Vector();
 		bool empty() const {return this->NoE == 0;}
 		unsigned int size() const {return this->NoE;}
