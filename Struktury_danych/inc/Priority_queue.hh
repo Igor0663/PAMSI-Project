@@ -5,7 +5,7 @@
 #include<functional>
 #include<iostream>
 
-template<typename T,class Comparator = std::function<bool(T,T)> >
+template<typename T,class Comparator = std::greater<T> >
 class Priority_queue
 {
 	private:
