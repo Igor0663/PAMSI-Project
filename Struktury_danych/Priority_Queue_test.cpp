@@ -1,8 +1,10 @@
 #include"inc/Priority_queue.hh"
 
+
+
 int main()
 {
-	Priority_queue<int> kopiec1;
+	Priority_queue<int > kopiec1;
 	std::cout << kopiec1.empty();
 	kopiec1.push(1);
 	std::cout << " " << kopiec1.empty() << "\n";
