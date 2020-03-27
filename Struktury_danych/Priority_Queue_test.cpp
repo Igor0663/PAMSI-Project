@@ -13,9 +13,7 @@ int main()
 	kopiec1.push(5);
 	kopiec1.push(1);
 	std::cout << kopiec1.top() << "\n";
-
-	Priority_queue<int> kopiec2 = kopiec1;
-
+	Priority_queue<int> kopiec2 = kopiec1;	
 	while(!kopiec1.empty())
 		std::cout << kopiec1.pop() << " ";
 	std::cout << "\n";

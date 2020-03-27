@@ -2,21 +2,22 @@
 #include<exception>
 #include<iostream>
 
-template<typename T>
-Priority_queue<T>::~Priority_queue()
+template<typename T, class Comparator>
+Priority_queue<T, Comparator>::~Priority_queue()
 {
 	delete heap;
 }
-template<typename T>
-Priority_queue<T>::Priority_queue(const Priority_queue& Pqueue)
+template<typename T, class Comparator>
+Priority_queue<T, Comparator>::Priority_queue(const Priority_queue& Pqueue)
 {
-	heap = new Vector<T>();
+	this->heap = new Vector<T>();
+	this->cmp = Pqueue.cmp;
 	for(unsigned int i = 0; i < Pqueue.size();i++)
 		this->heap->push_back((*Pqueue.heap)[i]);
 }
 
-template<typename T>
-void Priority_queue<T>::push(const T& NewElement)
+template<typename T, class Comparator>
+void Priority_queue<T, Comparator>::push(const T& NewElement)
 {
 	this->heap->push_back(NewElement);
 	unsigned int index = this->heap->size() - 1;
@@ -24,7 +25,7 @@ void Priority_queue<T>::push(const T& NewElement)
 	{
 		if(index == 0)
 			break;
-		if((*this->heap)[index] <= (*this->heap)[(index + 1)/2 - 1])
+		if( cmp( (*this->heap)[(index + 1)/2 - 1], (*this->heap)[index] ) )
 			break;
 		std::swap((*this->heap)[(index+1)/2 - 1], (*this->heap)[index]);
 		index = (index + 1)/2 - 1;
@@ -32,8 +33,8 @@ void Priority_queue<T>::push(const T& NewElement)
 	return;
 }
 
-template<typename T>
-const T& Priority_queue<T>::top() const
+template<typename T, class Comparator>
+const T& Priority_queue<T, Comparator>::top() const
 {
 	try
 	{
@@ -48,8 +49,8 @@ const T& Priority_queue<T>::top() const
 	}
 }
 
-template<typename T>
-T Priority_queue<T>::pop()
+template<typename T, class Comparator>
+T Priority_queue<T, Comparator>::pop()
 {
 	try
 	{
@@ -89,7 +90,7 @@ T Priority_queue<T>::pop()
 			break;
 		if(!right_exists)
 		{
-			if( l_value > (*this->heap)[index])
+			if(cmp(l_value,(*this->heap)[index]))
 			{
 				std::swap((*this->heap)[2*(index + 1) -1],  (*this->heap)[index]);
 				index = 2*(index + 1) - 1;
@@ -98,9 +99,9 @@ T Priority_queue<T>::pop()
 			else
 				break;
 		}
-		if( std::max(l_value, r_value) <= (*this->heap)[index])
+		if( cmp((*this->heap)[index], l_value) && cmp((*this->heap)[index], r_value)  )	
 			break;
-		if( l_value >= r_value )
+		if( cmp(l_value,r_value) )
 		{
 			std::swap((*this->heap)[2*(index + 1) -1],  (*this->heap)[index]);
 			index = 2*(index + 1) - 1;
@@ -117,3 +118,4 @@ T Priority_queue<T>::pop()
 
 	return top_value;
 }
+

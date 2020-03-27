@@ -2,14 +2,17 @@
 #define PRIORITY_QUEUE_HH
 
 #include"Vector.hh"
+#include<functional>
+#include<iostream>
 
-template<typename T>
+template<typename T,class Comparator = std::greater<T> >
 class Priority_queue
 {
 	private:
 		Vector<T>* heap;
+		Comparator cmp;
 	public:
-		Priority_queue(){heap = new Vector<T>(); }
+		Priority_queue(){heap = new Vector<T>(); cmp = Comparator(); }
 		Priority_queue(const Priority_queue& Pqueue);
 		~Priority_queue();
 		const T& top() const;
