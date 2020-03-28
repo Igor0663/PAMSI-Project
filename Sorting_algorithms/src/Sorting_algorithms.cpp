@@ -1,7 +1,8 @@
 #include<iostream>
+#include<cmath>
 
-template< typename T, class Compare>
-void merge( T* tab_l, T* tab_r, Compare cmp)
+template<typename T, class Compare>
+void merge(T* tab_l, T* tab_r, Compare cmp)
 {
 	unsigned int size_tab = (tab_r - tab_l);
 	unsigned int middle = (size_tab - 1) / 2;
@@ -48,7 +49,7 @@ void merge( T* tab_l, T* tab_r, Compare cmp)
 }
 
 
-template< typename T, class Compare>
+template<typename T, class Compare>
 int partition(T* tab_l, T* tab_r, Compare cmp)
 {
 	unsigned int size_tab = (tab_r - tab_l);
@@ -81,8 +82,8 @@ int partition(T* tab_l, T* tab_r, Compare cmp)
 	delete [] tab_tmp;
 	return int(l_ptr);
 }
-template< typename T, class Compare>
-void mergesort( T* tab_l, T* tab_r, Compare cmp)
+template<typename T, class Compare>
+void mergesort(T* tab_l, T* tab_r, Compare cmp)
 {
 	if( tab_r - tab_l  == 1)
 		return;
@@ -96,8 +97,8 @@ void mergesort( T* tab_l, T* tab_r, Compare cmp)
 	return;
 }
 
-template< typename T, class Compare>
-void quicksort( T* tab_l, T* tab_r, Compare cmp)
+template<typename T, class Compare>
+void quicksort(T* tab_l, T* tab_r, Compare cmp)
 {
 	if( tab_r - tab_l  <= 1)
 		return;
@@ -108,8 +109,8 @@ void quicksort( T* tab_l, T* tab_r, Compare cmp)
 	return;
 }
 
-template< typename T, class Compare >
-void heapsort( T* tab_l, T* tab_r, Compare cmp)
+template<typename T, class Compare >
+void heapsort(T* tab_l, T* tab_r, Compare cmp)
 {
 	Priority_queue<T, Compare>* heap = new Priority_queue<T, Compare>(cmp);
 	unsigned int size_tab = tab_r - tab_l;
@@ -121,3 +122,51 @@ void heapsort( T* tab_l, T* tab_r, Compare cmp)
 	delete heap;
 	return;
 }
+
+template<typename T, class Compare>
+void insertion_sort(T* tab_l, T* tab_r, Compare cmp)
+{
+	unsigned int size_tab = tab_r - tab_l;
+	for(unsigned int i = 1; i < size_tab;i++)
+	{
+		unsigned int j = i;
+		while(cmp(tab_l[j], tab_l[j-1]))
+		{
+			std::swap(tab_l[j], tab_l[j-1]);
+			j--;
+			if(j == 0) break;
+		}
+	}	
+	return;
+}
+
+template<typename T, class Compare>
+void intro_routine(T* tab_l, T* tab_r, Compare cmp, unsigned int max_depth)
+{
+	unsigned int size_tab = tab_r - tab_l;
+	if(size_tab <= 10)
+	{
+		insertion_sort(tab_l, tab_r, cmp);
+		return;
+	}
+	if(max_depth == 0)
+	{
+		heapsort(tab_l, tab_r, cmp);
+		return;
+	}
+
+	int partition_index = partition(tab_l, tab_r, cmp);
+
+	intro_routine(tab_l, tab_l + partition_index, cmp, max_depth - 1);
+	intro_routine(tab_l + partition_index + 1, tab_r, cmp, max_depth - 1);
+	return;
+}
+
+template<typename T, class Compare>
+void introsort(T* tab_l, T* tab_r, Compare cmp)
+{
+	unsigned int size_tab = tab_r - tab_l;
+	intro_routine( tab_l, tab_r, cmp, (unsigned int)(2 * std::log2(size_tab)));
+	return;
+}
+
