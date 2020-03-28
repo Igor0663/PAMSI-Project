@@ -13,6 +13,7 @@ class Priority_queue
 		Comparator cmp;
 	public:
 		Priority_queue(){heap = new Vector<T>(); this->cmp = Comparator(); }
+		Priority_queue( const Comparator& cmp_) {heap = new Vector<T>(); this->cmp = cmp_; }
 		Priority_queue(const Priority_queue& Pqueue);
 		~Priority_queue();
 		const T& top() const;
