@@ -111,14 +111,13 @@ void quicksort( T* tab_l, T* tab_r, Compare cmp)
 template< typename T, class Compare >
 void heapsort( T* tab_l, T* tab_r, Compare cmp)
 {
-	Priority_queue<T, Compare>* heap = new Priority_queue<T, Compare>();
+	Priority_queue<T, Compare>* heap = new Priority_queue<T, Compare>(cmp);
 	unsigned int size_tab = tab_r - tab_l;
 
 	for(unsigned int i = 0;i < size_tab;i++)
 		heap->push(tab_l[i]);
 	for(unsigned int i = 0;i < size_tab;i++)
 		tab_l[i] = heap->pop();
-
 	delete heap;
 	return;
 }
