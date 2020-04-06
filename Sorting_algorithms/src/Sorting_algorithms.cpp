@@ -53,7 +53,8 @@ template<typename T, class Compare>
 int partition(T* tab_l, T* tab_r, Compare cmp)
 {
 	unsigned int size_tab = (tab_r - tab_l);
-	unsigned int middle = (size_tab - 1) / 2;
+//	unsigned int middle = (size_tab - 1) / 2;
+	unsigned int middle = (uintptr_t)(tab_l)%size_tab;
 	T middle_value = tab_l[middle];
 
 	T* tab_tmp = new T[size_tab];
