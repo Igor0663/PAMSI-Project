@@ -92,6 +92,7 @@ class List
 		void remove(const T& element);
 		void erase(iterator& it );
 		void erase(reverse_iterator& it);
+		void erase(Node& node);
 		T& operator[](unsigned int index);
 		const T& operator[](unsigned int index) const;
 		const T& front() const{ return head->value; }

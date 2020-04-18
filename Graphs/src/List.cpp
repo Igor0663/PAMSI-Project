@@ -135,6 +135,25 @@ void List<T>::erase(reverse_iterator& it)
 	return;
 }
 
+template<typename T>
+void List<T>::erase(List<T>::Node& element)
+{
+	if(element.next == nullptr)
+	{
+		this -> pop_back();
+		return;
+	}
+	if(element.prev == nullptr)
+	{
+		this -> pop_front();
+		return;
+	}
+	element.prev->next = element.next;
+	element.next->prev = element.prev;
+	delete &element;
+	this->NoE--;
+	return;
+}
 
 
 template<typename T>
