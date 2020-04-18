@@ -239,3 +239,12 @@ const T& List<T>::operator[](unsigned int ind) const
 		ptr++;
 	return *ptr;
 }
+template<typename T>
+List<T>& List<T>::operator=(const List<T>& L)
+{
+	while(!this->empty())
+		this->pop_front();
+	for(auto it = L.cbegin(); it != L.cend(); it++)
+		this->push_back(*it);
+	return *this;
+}

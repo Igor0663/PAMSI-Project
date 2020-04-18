@@ -95,6 +95,7 @@ class List
 		void erase(Node& node);
 		T& operator[](unsigned int index);
 		const T& operator[](unsigned int index) const;
+		List<T>& operator=(const List<T>& L);
 		const T& front() const{ return head->value; }
 		const T& back() const { return tail->value; }
 		bool empty() const { return this->head == nullptr;}
