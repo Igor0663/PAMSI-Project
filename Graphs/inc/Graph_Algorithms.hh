@@ -16,6 +16,5 @@ struct Dijkstra_result
 };
 
 
-Dijkstra_result Dijkstra(GraphL G, unsigned int s);
-Dijkstra_result Dijkstra(GraphM G, unsigned int s);
+Dijkstra_result Dijkstra(Graph_base& G, unsigned int s);
 

@@ -26,7 +26,7 @@ void GraphL::insertEdge(unsigned int v, unsigned int w, int o)
 	this->V[v -1].push_back({w,o});
 }
 
-List<std::pair<unsigned int,int> >& GraphL::incidentEdges(unsigned int v) const
+List<std::pair<unsigned int,int> > GraphL::incidentEdges(unsigned int v) const
 {
 	return this->V[v-1];
 }
