@@ -2,21 +2,23 @@
 #define GRAPHM_HH
 #include"Graph_base.hh"
 
-class GraphM: public Graph_base
+template<typename Et>
+class GraphM: public Graph_base<Et>
 {
 	public:
 		GraphM(unsigned int i = 1);
 		~GraphM();
 
 		bool areAdjacent(unsigned int v, unsigned int w) const override;
-		void insertEdge(unsigned int v, unsigned int w, int o) override;
-		List<std::pair<unsigned int,int> > incidentEdges(unsigned int v) const override;
+		void insertEdge(unsigned int v, unsigned int w, Et o) override;
+		List<std::pair<unsigned int, Et> > incidentEdges(unsigned int v) const override;
 
 	private:
 		bool** AdjMat; // Adjacency matrix
-		int** E_content;// Content of edges
+		Et** E_content;// Content of edges
 
 };
 
+#include"../src/GraphM.cpp"
 
 #endif

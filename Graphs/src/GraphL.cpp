@@ -1,32 +1,34 @@
-#include"../inc/GraphL.hh"
-
-GraphL::GraphL(unsigned int m)
+template< typename Et>
+GraphL<Et>::GraphL(unsigned int m)
 {
 	this->NoV = m;
-	this->V = new List<std::pair<unsigned int, int> > [this->NoV];
+	this->V = new List<std::pair<unsigned int, Et> > [this->NoV];
 }
 
-GraphL::~GraphL()
+template< typename Et>
+GraphL<Et>::~GraphL()
 {
 	for(unsigned int j = 0; j < this->NoV;j++)
 		this->V[j].~List();
 	delete [] this->V;
 }
 
-bool GraphL::areAdjacent(unsigned int v, unsigned int w) const
+template< typename Et>
+bool GraphL<Et>::areAdjacent(unsigned int v, unsigned int w) const
 {
 	for(auto it = V[v-1].cbegin(); it != V[v - 1].cend();it++)
 		if( (*it).first == w ) return true;
 	return false;
 }
 
-
-void GraphL::insertEdge(unsigned int v, unsigned int w, int o)
+template<typename Et>
+void GraphL<Et>::insertEdge(unsigned int v, unsigned int w, Et o)
 {
 	this->V[v -1].push_back({w,o});
 }
 
-List<std::pair<unsigned int,int> > GraphL::incidentEdges(unsigned int v) const
+template< typename Et>
+List<std::pair<unsigned int, Et> > GraphL<Et>::incidentEdges(unsigned int v) const
 {
 	return this->V[v-1];
 }
