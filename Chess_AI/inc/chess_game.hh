@@ -3,6 +3,7 @@
 
 #include"chessboard.hh"
 #include<vector>
+#include<stack>
 
 struct pos_move{
 	std::pair<int, int> from;
@@ -24,6 +25,7 @@ class chess_game{
 
 		unsigned int white_score;
 		unsigned int black_score;
+		std::stack< std::pair< std::vector< pos_move >, int > > history;
 		bool whose_turn;
 		bool AI;
 	public:

@@ -156,8 +156,14 @@ const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool col
 
 void chess_game::make_move( std::vector<pos_move>& move)
 {
+	piece* p = this->get_piece( move[0].to.first, move[0].to.second );
+	int ind = -1;
+	if(p)
+		ind = (p - &(this->pieces[0]));
+	this->history.push({move, ind});
 	for(unsigned int i = 0; i < move.size(); i++)
 		this->board.move_piece(move[i].from, move[i].to);
+	std::cout << this->history.top().second << "\n";
 	return;
 }
 
