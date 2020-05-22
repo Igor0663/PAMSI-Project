@@ -2,6 +2,7 @@
 #include<iostream>
 #include<cctype>
 
+
 chessboard::chessboard(unsigned int N)
 {
 	this->size = N;
@@ -49,11 +50,32 @@ void chessboard::add_piece(unsigned int i, unsigned int j, piece* p)
 }
 
 
-void chessboard::move_piece(std::pair<int, int> from, std::pair<int, int> to)
+void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces)
 {
-	piece* p = this->fields(from.first, from.second).get_piece();
-	this->fields(from.first, from.second).set_piece(nullptr);
-	this->fields(to.first, to.second).set_piece(p);
-	p->made_move();
+	auto from = mov.from;
+	auto to = mov.to;
+	if(from != to)
+	{
+		piece* p = this->fields(from.first, from.second).get_piece();
+		this->fields(from.first, from.second).set_piece(nullptr);
+		this->fields(to.first, to.second).set_piece(p);
+		p->made_move();
+	}
+	else
+	{
+		piece p;
+		bool color = this->fields(from.first, from.second).get_piece()->get_color();
+		switch(mov.promotion)
+		{
+			case 'q': p = queen(color); break;
+			case 'n': p = knight(color); break;
+			case 'b': p = bishop(color); break;
+			case 'r': p = rook(color); break;
+			default: std::cerr <<"promotion to undefined piece\n"; break;
+		}
+		pieces.push_back(p);
+		this->fields(to.first, to.second).set_piece(&pieces.back());
+	}
+
 	return;
 }

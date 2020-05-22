@@ -99,6 +99,43 @@ void chess_game::check_castling(bool color)
 	return;
 }
 
+void chess_game::check_promotion(bool color)
+{
+	int row;
+	char marks[] = {'q', 'n', 'b', 'r'};
+	std::vector< std::vector<pos_move> > promotions;
+
+	if(color == white)
+		row = 0;
+	else if(color == black)
+		row = 7;
+	else
+		std::cerr << "Color value is neither black nor white";
+
+	for(int i = 0; i < (int)(this->available_moves.size()); i++)
+	{
+		auto mov = this->available_moves[i];
+		piece* p = this->get_piece(mov[0].from.first, mov[0].from.second);
+		if(p->get_mark() == 'p' and mov[0].to.first == row)
+		{
+			std::swap(this->available_moves[i], this->available_moves.back());
+			this->available_moves.pop_back();
+			promotions.push_back(mov);
+			i--;
+		}
+	}
+	for(unsigned int i = 0; i < promotions.size(); i++)
+	{
+		promotions[i].push_back({promotions[i][0].to,promotions[i][0].to });
+		for(int j = 0; j < 4;j++)
+		{
+			promotions[i][1].promotion = marks[j];
+			this->available_moves.push_back(promotions[i]);
+		}
+	}
+	return;
+}
+
 const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool color)
 {
 	this->available_moves.clear();
@@ -150,20 +187,33 @@ const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool col
 
 	this->check_castling(black);
 	this->check_castling(white);
+	this->check_promotion(black);
+	this->check_promotion(white);
+/*	for( int i = 0; i < this->available_moves.size(); i++)
+	{
+		auto kokos = this->available_moves[i];
+		for(int j = 0; j < kokos.size();j++)
+			std::cout<< "[(" << kokos[j].from.first << "," << kokos[j].from.second <<"),(" << kokos[j].to.first << "," << kokos[j].to.second <<")] ";
+		std::cout << "\n";
+	}
+*/
 	return this->available_moves;
 }
 
 
-void chess_game::make_move( std::vector<pos_move>& move)
+void chess_game::make_move( const std::vector<pos_move>& move)
 {
-	piece* p = this->get_piece( move[0].to.first, move[0].to.second );
-	int ind = -1;
-	if(p)
-		ind = (p - &(this->pieces[0]));
-	this->history.push({move, ind});
+	std::vector< std::pair < pos_move, int> > H;
 	for(unsigned int i = 0; i < move.size(); i++)
-		this->board.move_piece(move[i].from, move[i].to);
-	std::cout << this->history.top().second << "\n";
+	{
+		piece* p = this->get_piece( move[i].to.first, move[i].to.second );
+		int ind = -1;
+		if(p)
+			ind = (p - &(this->pieces[0]));
+		this->board.move_piece(move[i], this->pieces);
+		H.push_back({move[i], ind});
+	}
+	this->history.push(H);
 	return;
 }
 
@@ -201,9 +251,38 @@ void chess_game::turn()
 		for(unsigned int i = 0; i < this->available_moves.size(); i++)
 			if(available_moves[i][0].from == a and available_moves[i][0].to == b)
 			{
-				this->make_move(available_moves[i]);
-				good_move = true;
-				break;
+				if(available_moves[i].size() == 2 and available_moves[i][1].from == available_moves[i][1].to)
+				{
+					//promotion case
+					char marks[] = {'q', 'n', 'b', 'r' };
+					char input;
+					bool check_input = false;
+					std::cout << "Promotion available, choose promotion piece( q, n, b, r): ";
+					do
+					{
+						std::cin >> input;
+						for(int j = 0; j < 4; j++)
+							if(input == marks[j])
+								check_input = true;
+						if(!check_input)
+							std::cout << "Wrong input, try again: ";
+					}while(!check_input);
+				       	
+					for(int j = 0; j < 4; j++)
+						if(input == marks[j])
+						{
+							this->make_move(available_moves[i+j]);
+							good_move = true;
+							break;
+						}
+					break;	
+				}
+				else
+				{
+					this->make_move(available_moves[i]);
+					good_move = true;
+					break;
+				}
 			}
 		if(!good_move)
 			std::cout << "Nie mozna wykonac takiego ruchu, sprobuj ponownie: \n";
