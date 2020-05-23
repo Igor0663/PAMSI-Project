@@ -5,6 +5,7 @@
 pawn::pawn(bool color): piece(color)
 {
 	this->mark = 'p'; 
+	this->points = 1; 
 	int v;
 	if(color == white)
 		v = -1;
@@ -20,6 +21,7 @@ pawn::pawn(bool color): piece(color)
 rook::rook(bool color): piece(color)
 {
 	this->mark = 'r';
+	this->points = 5;
 	this->allowed_moves.push_back( move( 0,  1, INF));
 	this->allowed_moves.push_back( move( 0, -1, INF));
 	this->allowed_moves.push_back( move( 1,  0, INF));
@@ -29,6 +31,7 @@ rook::rook(bool color): piece(color)
 knight::knight(bool color): piece(color)
 {
 	this->mark = 'n';
+	this->points = 3;
 	this->allowed_moves.push_back( move( 1,  2, 1));
 	this->allowed_moves.push_back( move( 1, -2, 1));
 	this->allowed_moves.push_back( move(-1,  2, 1));
@@ -42,6 +45,7 @@ knight::knight(bool color): piece(color)
 bishop::bishop(bool color): piece(color)
 {
 	this->mark = 'b';
+	this->points = 3;
 	this->allowed_moves.push_back( move( 1,  1, INF));
 	this->allowed_moves.push_back( move( 1, -1, INF));
 	this->allowed_moves.push_back( move(-1,  1, INF));
@@ -51,6 +55,7 @@ bishop::bishop(bool color): piece(color)
 queen::queen(bool color): piece(color)
 {
 	this->mark = 'q';
+	this->points = 9;
 	this->allowed_moves.push_back( move( 0,  1, INF));
 	this->allowed_moves.push_back( move( 0, -1, INF));
 	this->allowed_moves.push_back( move( 1,  0, INF));
@@ -64,6 +69,7 @@ queen::queen(bool color): piece(color)
 king::king(bool color): piece(color)
 {
 	this->mark = 'k';
+	this->points = 10000;
 	this->allowed_moves.push_back( move( 0,  1, 1));
 	this->allowed_moves.push_back( move( 0, -1, 1));
 	this->allowed_moves.push_back( move( 1,  0, 1));

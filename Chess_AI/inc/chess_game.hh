@@ -20,8 +20,7 @@ class chess_game{
 
 		std::vector< std::vector<pos_move > > available_moves; 
 
-		unsigned int white_score;
-		unsigned int black_score;
+		unsigned int score[2]; // 0 - whites', 1 - blacks'
 		std::stack< std::vector< std::pair< pos_move, int> > > history;
 		bool whose_turn;
 		bool AI;
@@ -33,6 +32,7 @@ class chess_game{
 		void check_castling(bool color);
 		void check_promotion(bool color);
 		void make_move( const std::vector<pos_move>& move);
+		void undo_move();
 		void turn();
 		piece* get_piece( unsigned int i, unsigned int j);
 };

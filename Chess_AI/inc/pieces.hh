@@ -10,14 +10,16 @@ class piece
 		char mark;
 		bool color;
 		int NoM; //number of moves
+		unsigned int points;
 		std::vector<move> allowed_moves;
 	public:
 		int get_NoM() {return this->NoM; }
 		void made_move(){this->NoM++;}
 		void undo_move(){this->NoM--;}
-		piece(bool color = 0): mark('x'), color(color), NoM(0) {}	
+		piece(bool color = 0): mark('x'), color(color), NoM(0), points(0) {}	
 		char get_mark(){return this->mark;}
 		bool get_color(){return this->color;}
+		unsigned int get_points(){return this->points;}
 		const std::vector<move>& get_moves(){return allowed_moves;  }
 };
 

@@ -4,7 +4,7 @@
 #define white 0
 #define black 1
 
-chess_game::chess_game(): board(chessboard()), white_score(0), black_score(0), whose_turn(0), AI(0) 
+chess_game::chess_game(): board(chessboard()), score{0,0}, whose_turn(white), AI(0) 
 {
 	this->pieces.reserve(50);
 	this->game_status = game_ongoing;
@@ -212,8 +212,26 @@ void chess_game::make_move( const std::vector<pos_move>& move)
 		if(p)
 		{
 			ind = (p - &(this->pieces[0]));
+			int color = p->get_color();
+			if(move[i].from != move[i].to)	
+			{
+				this->score[!color] += p->get_points();
+			}
+			else
+			{
+				int points;
+				switch(move[i].promotion)
+				{
+					case 'r': points = rook(white).get_points(); break;
+					case 'n': points = knight(white).get_points(); break;
+					case 'b': points = bishop(white).get_points(); break;
+					case 'q': points = queen(white).get_points(); break;
+					default: std::cerr << "Undefined piece to promote into\n";
+				}
+				this->score[color] += points - 1;
+			}
 			if(p->get_mark() == 'k')
-				this->game_status = !p->get_color();
+				this->game_status = !color;
 		}
 		this->board.move_piece(move[i], this->pieces);
 		H.push_back({move[i], ind});
@@ -291,8 +309,9 @@ void chess_game::turn()
 				}
 			}
 		if(!good_move)
-			std::cout << "Nie mozna wykonac takiego ruchu, sprobuj ponownie: \n";
+			std::cout << "Invalid move, try again: \n";
 	}
 	this->whose_turn = !this->whose_turn;
+	std::cout << "Whites' score: " << this->score[white] <<"\nBlacks' score: " << this-> score[black] << "\n";
 	return;
 }
