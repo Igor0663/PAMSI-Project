@@ -4,7 +4,9 @@
 #include"chessboard.hh"
 #include<vector>
 #include<stack>
-
+#define black_won 1
+#define white_won 0 
+#define game_ongoing -1
 
 class chess_game{
 		chessboard board;
@@ -24,6 +26,7 @@ class chess_game{
 		bool whose_turn;
 		bool AI;
 	public:
+		int game_status;
 		chess_game();
 		void display(){this->board.display(); }
 		const std::vector< std::vector<pos_move > > & possible_moves(bool color);

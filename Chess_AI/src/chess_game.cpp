@@ -7,6 +7,7 @@
 chess_game::chess_game(): board(chessboard()), white_score(0), black_score(0), whose_turn(0), AI(0) 
 {
 	this->pieces.reserve(50);
+	this->game_status = game_ongoing;
 	for(int i = 0;i < 8; i++)
 	{
 		this->pieces.push_back(pawn(black));
@@ -209,9 +210,14 @@ void chess_game::make_move( const std::vector<pos_move>& move)
 		piece* p = this->get_piece( move[i].to.first, move[i].to.second );
 		int ind = -1;
 		if(p)
+		{
 			ind = (p - &(this->pieces[0]));
+			if(p->get_mark() == 'k')
+				this->game_status = !p->get_color();
+		}
 		this->board.move_piece(move[i], this->pieces);
 		H.push_back({move[i], ind});
+
 	}
 	this->history.push(H);
 	return;

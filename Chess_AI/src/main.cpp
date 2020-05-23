@@ -7,13 +7,16 @@
 int main()
 {
 	chess_game game;
-	int i = 100;
-	while(i--)
+	while(game.game_status == -1)
 	{
 		game.display();
 		game.turn();
 		std::cout << "\n\n";
 	}
 	game.display();
+	if(game.game_status)
+		std::cout << "Blacks won!\n";
+	else
+		std::cout << "White won!\n";
 	return 0;
 }
