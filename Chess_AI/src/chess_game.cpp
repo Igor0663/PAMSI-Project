@@ -241,6 +241,45 @@ void chess_game::make_move( const std::vector<pos_move>& move)
 	return;
 }
 
+
+void chess_game::undo_move()
+{
+	if(this->history.empty())
+		return;
+	auto last_move = this->history.top();
+	this->history.pop();
+	for(int  i = (int)(last_move.size()) - 1; i >= 0; i--)
+	{
+		int ind = last_move[i].second;
+		pos_move move = last_move[i].first;
+		if(ind != -1)
+		{
+			piece* p = &this->pieces[ind];
+			int color = p->get_color();
+			if(move.from != move.to)	
+			{
+				this->score[!color] -= p->get_points();
+			}
+			else
+			{
+				int points;
+				switch(move.promotion)
+				{
+					case 'r': points = rook(white).get_points(); break;
+					case 'n': points = knight(white).get_points(); break;
+					case 'b': points = bishop(white).get_points(); break;
+					case 'q': points = queen(white).get_points(); break;
+					default: std::cerr << "Undefined piece to promote into\n";
+				}
+				this->score[color] -= points - 1;
+			}
+		}
+		this->board.undo_move(last_move[i].first, last_move[i].second, this->pieces);
+	}
+	this->whose_turn = !this->whose_turn;
+	std::cout << "Whites' score: " << this->score[white] <<"\nBlacks' score: " << this-> score[black] << "\n";
+}
+
 bool check_input(std::string S)
 {
 	if(S.size() != 2)
@@ -265,6 +304,11 @@ void chess_game::turn()
 	while(!good_move)
 	{
 		std::cin >> from >> to;
+		if( from == "r" and to == "r")
+		{
+			this->undo_move();
+			return;
+		}
 		if( !check_input(from) or !check_input(to) )
 		{
 			std::cout << "Nie mozna wykonac takiego ruchu, sprobuj ponownie: \n";
@@ -315,3 +359,4 @@ void chess_game::turn()
 	std::cout << "Whites' score: " << this->score[white] <<"\nBlacks' score: " << this-> score[black] << "\n";
 	return;
 }
+

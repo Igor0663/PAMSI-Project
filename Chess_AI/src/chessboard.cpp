@@ -79,3 +79,23 @@ void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces)
 
 	return;
 }
+void chessboard::undo_move(pos_move mov, int ind, std::vector<piece>& pieces)
+{
+	auto from = mov.from;
+	auto to = mov.to;
+	if(from != to)
+	{
+		piece* p = this->fields(to.first, to.second).get_piece();
+		this->fields(to.first, to.second).set_piece(nullptr);
+		this->fields(from.first, from.second).set_piece(p);
+		p->undo_move();
+		if(ind != -1)
+			this->fields(to.first, to.second).set_piece(&pieces[ind]);
+	}
+	else
+	{
+		pieces.pop_back();
+		this->fields(from.first, from.second).set_piece(&pieces[ind]);
+	}
+	return;
+}
