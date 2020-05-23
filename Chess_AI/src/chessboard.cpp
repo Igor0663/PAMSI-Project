@@ -1,7 +1,7 @@
 #include"chessboard.hh"
 #include<iostream>
 #include<cctype>
-
+#include <stdlib.h>
 
 chessboard::chessboard(unsigned int N)
 {
@@ -18,6 +18,7 @@ chessboard::chessboard(unsigned int N)
 
 void chessboard::display()
 {
+	system("clear");
 	for(unsigned int i = 0; i < this->size; i++)
 	{
 		std::cout << this->size - i << "  ";

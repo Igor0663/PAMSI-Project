@@ -7,6 +7,7 @@
 #define black_won 1
 #define white_won 0 
 #define game_ongoing -1
+#define max_depth 3
 
 class chess_game{
 		chessboard board;
@@ -24,17 +25,19 @@ class chess_game{
 		std::stack< std::vector< std::pair< pos_move, int> > > history;
 		bool whose_turn;
 		bool AI;
-	public:
 		int game_status;
+	public:
 		chess_game();
 		void display(){this->board.display(); }
 		const std::vector< std::vector<pos_move > > & possible_moves(bool color);
 		void check_castling(bool color);
 		void check_promotion(bool color);
 		void make_move( const std::vector<pos_move>& move);
+		int evaluate_board();
 		void undo_move();
 		void turn();
 		piece* get_piece( unsigned int i, unsigned int j);
+		int get_game_status(){return this->game_status;}
 };
 
 

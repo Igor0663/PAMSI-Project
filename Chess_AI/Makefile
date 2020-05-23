@@ -3,6 +3,7 @@ CXXFLAGS=-g -Iinc -Wall -pedantic -std=c++0x
 chess:   obj obj/main.o obj/chess_game.o obj/chessboard.o obj/field.o obj/pieces.o obj/move.o
 	g++ -Wall -pedantic -std=c++0x -fsanitize=address -o chess obj/main.o obj/chess_game.o \
 		obj/chessboard.o obj/field.o obj/pieces.o obj/move.o
+	rm -r obj
 						
 obj:
 	mkdir obj
@@ -27,3 +28,4 @@ obj/move.o: src/move.cpp inc/move.hh
 
 clear:
 	rm -f obj/*.o chess
+	rm -r obj

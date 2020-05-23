@@ -238,6 +238,7 @@ void chess_game::make_move( const std::vector<pos_move>& move)
 
 	}
 	this->history.push(H);
+	this->whose_turn = !this->whose_turn;
 	return;
 }
 
@@ -277,7 +278,7 @@ void chess_game::undo_move()
 		this->board.undo_move(last_move[i].first, last_move[i].second, this->pieces);
 	}
 	this->whose_turn = !this->whose_turn;
-	std::cout << "Whites' score: " << this->score[white] <<"\nBlacks' score: " << this-> score[black] << "\n";
+	this->game_status = game_ongoing;
 }
 
 bool check_input(std::string S)
@@ -291,10 +292,61 @@ bool check_input(std::string S)
 	return true;
 }
 
+int chess_game::evaluate_board()
+{
+	return this->score[white] - this->score[black];
+}
+
+int minimax(chess_game& game, bool maximizing, int color, int depth)
+{
+	int result, move = 0;
+	if(maximizing)
+		result = -20000;
+	else
+		result = 20000;
+	int s = game.get_game_status();
+	if( depth == max_depth or s != -1 )
+		return game.evaluate_board();
+	std::vector< std::vector< pos_move > > moves = game.possible_moves(color);
+	for(unsigned int i = 0; i < moves.size();i++)
+	{
+		game.make_move(moves[i]);
+		int new_res = minimax(game, !maximizing, !color, depth + 1);
+		if(maximizing)
+		{
+			if(new_res > result)
+			{
+				result = new_res;
+				move = i;
+			}
+		}
+		else
+			if(new_res < result)
+			{
+				result = new_res;
+				move = i;
+			}
+		game.undo_move();
+	}
+	if(depth == 0)
+		return move;
+	else
+		return result;
+}
+
+
 void chess_game::turn()
 {
 	std::string from, to;
 	std::pair< int, int> a, b;
+	if(this->whose_turn)
+	{
+		int ind = minimax(*this, false, black, 0);
+		this->possible_moves(this->whose_turn);
+		this->make_move(this->available_moves[ind]);
+		return;
+	}
+
 	this->possible_moves(this->whose_turn);
 	bool good_move = false;
 	if(this->whose_turn)
@@ -355,8 +407,6 @@ void chess_game::turn()
 		if(!good_move)
 			std::cout << "Invalid move, try again: \n";
 	}
-	this->whose_turn = !this->whose_turn;
-	std::cout << "Whites' score: " << this->score[white] <<"\nBlacks' score: " << this-> score[black] << "\n";
 	return;
 }
 
