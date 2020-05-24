@@ -1,6 +1,7 @@
 #include"chess_game.hh"
 #include<iostream>
 #include<cctype>
+#include<algorithm>
 #define white 0
 #define black 1
 
@@ -174,6 +175,10 @@ const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool col
 							}
 							else if( mov.type != 1)
 							{
+								if( mov.h_move == 0 and mov.v_move == 2 and this->board.get_piece(i + 1, j ) )
+									break;
+								if( mov.h_move == 0 and mov.v_move == -2 and this->board.get_piece(i - 1, j ) )
+									break;
 								pos_move m({i, j}, {next_v, next_h});
 								std::vector<pos_move> V = {m};
 								this->available_moves.push_back(V);
@@ -190,14 +195,6 @@ const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool col
 	this->check_castling(white);
 	this->check_promotion(black);
 	this->check_promotion(white);
-/*	for( int i = 0; i < this->available_moves.size(); i++)
-	{
-		auto kokos = this->available_moves[i];
-		for(int j = 0; j < kokos.size();j++)
-			std::cout<< "[(" << kokos[j].from.first << "," << kokos[j].from.second <<"),(" << kokos[j].to.first << "," << kokos[j].to.second <<")] ";
-		std::cout << "\n";
-	}
-*/
 	return this->available_moves;
 }
 
@@ -339,13 +336,13 @@ void chess_game::turn()
 {
 	std::string from, to;
 	std::pair< int, int> a, b;
-	if(this->whose_turn)
+/*	if(this->whose_turn)
 	{
 		int ind = minimax(*this, false, black, 0);
 		this->possible_moves(this->whose_turn);
 		this->make_move(this->available_moves[ind]);
 		return;
-	}
+	}*/
 
 	this->possible_moves(this->whose_turn);
 	bool good_move = false;

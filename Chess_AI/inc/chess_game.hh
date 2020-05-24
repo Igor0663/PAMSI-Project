@@ -7,7 +7,7 @@
 #define black_won 1
 #define white_won 0 
 #define game_ongoing -1
-#define max_depth 3
+#define max_depth 4
 
 class chess_game{
 		chessboard board;
