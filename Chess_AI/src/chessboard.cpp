@@ -51,21 +51,31 @@ void chessboard::add_piece(unsigned int i, unsigned int j, piece* p)
 }
 
 
-void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces)
+void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces, std::vector< std::pair<int, int> >& pos )
 {
 	auto from = mov.from;
 	auto to = mov.to;
 	if(from != to)
 	{
 		piece* p = this->fields(from.first, from.second).get_piece();
+		piece* cap = this->fields(to.first, to.second).get_piece();
+		int ind_p = (p - &pieces[0]);
+		if(cap)
+		{
+			int ind_cap = (cap - &pieces[0]);
+			pos[ind_cap] = { -1, -1 };
+		}
+		pos[ind_p] = to;
 		this->fields(from.first, from.second).set_piece(nullptr);
 		this->fields(to.first, to.second).set_piece(p);
 		p->made_move();
+
 	}
 	else
 	{
+		piece* pawn = this->fields(from.first, from.second).get_piece();
 		piece p;
-		bool color = this->fields(from.first, from.second).get_piece()->get_color();
+		bool color = pawn->get_color();
 		switch(mov.promotion)
 		{
 			case 'q': p = queen(color); break;
@@ -75,27 +85,39 @@ void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces)
 			default: std::cerr <<"promotion to undefined piece\n"; break;
 		}
 		pieces.push_back(p);
+		pos.push_back(to);
+		int ind_pawn = (pawn - &pieces[0]);
+		pos[ind_pawn] = {-1, -1};
 		this->fields(to.first, to.second).set_piece(&pieces.back());
 	}
 
 	return;
 }
-void chessboard::undo_move(pos_move mov, int ind, std::vector<piece>& pieces)
+void chessboard::undo_move(pos_move mov, int ind, std::vector<piece>& pieces, std::vector<std::pair<int, int> >&  pos)
 {
 	auto from = mov.from;
 	auto to = mov.to;
 	if(from != to)
 	{
 		piece* p = this->fields(to.first, to.second).get_piece();
+		int ind_p = (p - &pieces[0]);
+		
+		pos[ind_p] = from;
+		
 		this->fields(to.first, to.second).set_piece(nullptr);
 		this->fields(from.first, from.second).set_piece(p);
 		p->undo_move();
 		if(ind != -1)
+		{
 			this->fields(to.first, to.second).set_piece(&pieces[ind]);
+			pos[ind] = to;
+		}
 	}
 	else
 	{
 		pieces.pop_back();
+		pos.pop_back();
+		pos[ind] = from;
 		this->fields(from.first, from.second).set_piece(&pieces[ind]);
 	}
 	return;

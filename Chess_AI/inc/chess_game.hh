@@ -12,12 +12,7 @@
 class chess_game{
 		chessboard board;
 		std::vector<piece> pieces;
-
-		std::vector<piece*> wpieces;
-		std::vector<piece*> bpieces;
-
-		std::vector<piece*> wcaptured;
-		std::vector<piece*> bcaptured;
+		std::vector<std::pair<int, int> > pieces_pos;
 
 		std::vector< std::vector<pos_move > > available_moves; 
 

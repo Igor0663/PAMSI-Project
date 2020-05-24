@@ -13,6 +13,7 @@ chess_game::chess_game(): board(chessboard()), score{0,0}, whose_turn(white), AI
 	{
 		this->pieces.push_back(pawn(black));
 		this->board.add_piece(1, i, &(this->pieces.back()) );
+		this->pieces_pos.push_back({1,i});
 	}
 	this->pieces.push_back(rook(black));
 	this->pieces.push_back(knight(black));
@@ -23,13 +24,17 @@ chess_game::chess_game(): board(chessboard()), score{0,0}, whose_turn(white), AI
 	this->pieces.push_back(knight(black));
 	this->pieces.push_back(rook(black));
 	for(int j = 0; j < 8;j++)
+	{
 		this->board.add_piece(0, j, &(this->pieces[8+j]));
+		this->pieces_pos.push_back({0,j});
+	}
 
 
 	for(int i = 0;i < 8; i++)
 	{
 		this->pieces.push_back(pawn(white));
 		this->board.add_piece(6, i, &(this->pieces.back()));
+		this->pieces_pos.push_back({6,i});
 	}
 	this->pieces.push_back(rook(white));
 	this->pieces.push_back(knight(white));
@@ -40,7 +45,10 @@ chess_game::chess_game(): board(chessboard()), score{0,0}, whose_turn(white), AI
 	this->pieces.push_back(knight(white));
 	this->pieces.push_back(rook(white));
 	for(int j = 0; j < 8;j++)
+	{
 		this->board.add_piece(7, j, &(this->pieces[24+j]));
+		this->pieces_pos.push_back({7,j});
+	}
 }
 
 piece* chess_game::get_piece( unsigned int i, unsigned int j)
@@ -141,55 +149,58 @@ void chess_game::check_promotion(bool color)
 const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool color)
 {
 	this->available_moves.clear();
-	int next_v, next_h;
-	for(int i = 0 ;i < 8; i++)
-		for(int j = 0; j < 8;j++)
+	int next_v, next_h, i, j;
+	for(unsigned int k = 0; k < this->pieces_pos.size();k++)
+	{
+		i = this->pieces_pos[k].first;
+		j = this->pieces_pos[k].second;
+		if( i == -1 and j == -1)
+			continue;
+		piece* p = this->board.get_piece(i, j);
+		if(p and p->get_color() == color)
 		{
-			piece* p = this->board.get_piece(i, j);
-			if(p and p->get_color() == color)
+			std::vector<move> m = p->get_moves();
+			for(unsigned int k = 0;k < m.size();k++)
 			{
-				std::vector<move> m = p->get_moves();
-				for(unsigned int k = 0;k < m.size();k++)
+				move mov = m[k];
+				if( mov.only_first and p->get_NoM() > 0)
+					continue;
+				for(unsigned int l = 1; l <= mov.max_rep; l++)
 				{
-					move mov = m[k];
-					if( mov.only_first and p->get_NoM() > 0)
-						continue;
-					for(unsigned int l = 1; l <= mov.max_rep; l++)
+					next_v = i + l * mov.v_move;
+					next_h = j + l * mov.h_move;
+					if( in_range(next_v, 0, 7) and in_range(next_h, 0, 7) )
 					{
-						next_v = i + l * mov.v_move;
-						next_h = j + l * mov.h_move;
-						if( in_range(next_v, 0, 7) and in_range(next_h, 0, 7) )
+						piece* n_p = this->board.get_piece(next_v, next_h);
+						if(n_p)
 						{
-							piece* n_p = this->board.get_piece(next_v, next_h);
-							if(n_p)
+							if(n_p->get_color() == p->get_color())
+								break;
+							if(mov.type != 2)
 							{
-								if(n_p->get_color() == p->get_color())
-									break;
-								if(mov.type != 2)
-								{
-									pos_move m({i, j}, {next_v, next_h});
-									std::vector<pos_move> V = {m};
-									this->available_moves.push_back(V);
-									break;
-								}
-							}
-							else if( mov.type != 1)
-							{
-								if( mov.h_move == 0 and mov.v_move == 2 and this->board.get_piece(i + 1, j ) )
-									break;
-								if( mov.h_move == 0 and mov.v_move == -2 and this->board.get_piece(i - 1, j ) )
-									break;
 								pos_move m({i, j}, {next_v, next_h});
 								std::vector<pos_move> V = {m};
 								this->available_moves.push_back(V);
+								break;
 							}
 						}
-						else
-							break;
-					}	
-				}
+						else if( mov.type != 1)
+						{
+							if( mov.h_move == 0 and mov.v_move == 2 and this->board.get_piece(i + 1, j ) )
+								break;
+							if( mov.h_move == 0 and mov.v_move == -2 and this->board.get_piece(i - 1, j ) )
+								break;
+							pos_move m({i, j}, {next_v, next_h});
+							std::vector<pos_move> V = {m};
+							this->available_moves.push_back(V);
+						}
+					}
+					else
+						break;
+				}	
 			}
 		}
+	}
 
 	this->check_castling(black);
 	this->check_castling(white);
@@ -230,7 +241,7 @@ void chess_game::make_move( const std::vector<pos_move>& move)
 			if(p->get_mark() == 'k')
 				this->game_status = !color;
 		}
-		this->board.move_piece(move[i], this->pieces);
+		this->board.move_piece(move[i], this->pieces, this->pieces_pos);
 		H.push_back({move[i], ind});
 
 	}
@@ -272,7 +283,7 @@ void chess_game::undo_move()
 				this->score[color] -= points - 1;
 			}
 		}
-		this->board.undo_move(last_move[i].first, last_move[i].second, this->pieces);
+		this->board.undo_move(last_move[i].first, last_move[i].second, this->pieces, this->pieces_pos);
 	}
 	this->whose_turn = !this->whose_turn;
 	this->game_status = game_ongoing;
@@ -336,13 +347,13 @@ void chess_game::turn()
 {
 	std::string from, to;
 	std::pair< int, int> a, b;
-/*	if(this->whose_turn)
+	if(this->whose_turn)
 	{
 		int ind = minimax(*this, false, black, 0);
 		this->possible_moves(this->whose_turn);
 		this->make_move(this->available_moves[ind]);
 		return;
-	}*/
+	}
 
 	this->possible_moves(this->whose_turn);
 	bool good_move = false;
