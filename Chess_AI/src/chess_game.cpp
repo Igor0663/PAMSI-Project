@@ -112,7 +112,7 @@ void chess_game::check_castling(bool color)
 void chess_game::check_promotion(bool color)
 {
 	int row;
-	char marks[] = {'q', 'n', 'b', 'r'};
+	char marks[] = {'q', 'r', 'b', 'n'};
 	std::vector< std::vector<pos_move> > promotions;
 
 	if(color == white)
@@ -342,6 +342,50 @@ int minimax(chess_game& game, bool maximizing, int color, int depth)
 		return result;
 }
 
+int chess_game::choose_promotion(bool color)
+{
+	sf::Vector2f box_size(240, 60);
+	sf::RectangleShape Sprite(box_size);
+	sf::Vector2f box_offset = (sf::Vector2f(512, 512) - box_size)/(float)(2);
+	sf::Vector2f next_figure(60, 0);
+	
+	Sprite.setPosition(box_offset);
+	Sprite.setFillColor(sf::Color(180, 180, 180));
+	this->gui.AppWin.draw(Sprite);
+	
+	sf::Sprite piece;
+	int order[4] = { 4, 1, 3, 2};
+	for(int i = 0; i < 4;i++)
+	{
+		piece.setTexture(this->gui.pieces_tex[color][order[i]]);
+		piece.setPosition(box_offset + (float)(i) * next_figure);
+		this->gui.AppWin.draw(piece);
+	}
+	this->gui.AppWin.display();
+	
+	int option = -2;
+	while(option == -2)
+	{
+		sf::Event event;
+		while(this->gui.AppWin.pollEvent(event))
+		{
+			if(event.type == sf::Event::MouseButtonPressed)  
+			{
+				int x = event.mouseButton.x;
+				int y = event.mouseButton.y;
+				if(event.mouseButton.button == sf::Mouse::Left)
+				{
+					if( in_range(y, box_offset.y, box_offset.y + box_size.y) and in_range(x,box_offset.x, box_offset.x + box_size.x) )
+						option = (x - box_offset.x)/next_figure.x;
+				}
+				else if(event.mouseButton.button == sf::Mouse::Right)
+					option = -1;
+			}
+		}
+	}
+	return option;
+}
+
 
 int chess_game::play()
 {
@@ -356,12 +400,12 @@ int chess_game::play()
 			this->gui.AppWin.close();
 			return this->game_status;
 		}
-	/*	if(this->whose_turn)
+		if(this->whose_turn)
 		{
 			int ind = minimax(*this, false, black, 0);
 			this->possible_moves(this->whose_turn);
 			this->make_move(this->available_moves[ind]);
-		}*/
+		}
 		sf::Event event;
 		while(this->gui.AppWin.pollEvent(event))
 		{
@@ -373,7 +417,6 @@ int chess_game::play()
 				{
 					int row = (int)((event.mouseButton.y - this->gui.board_offset.y)/this->gui.field_size.y);
 					int col = (int)((event.mouseButton.x - this->gui.board_offset.x)/this->gui.field_size.x);
-					//std::cout << row << " " << col << "\n" << std::flush;
 					if( a == std::pair<int, int>(-1, -1))
 						a = { row, col };
 					else
@@ -384,6 +427,13 @@ int chess_game::play()
 						{
 							if(available_moves[i][0].from == a and available_moves[i][0].to == b)
 							{
+								if(available_moves[i].size() == 2 and available_moves[i][1].from == available_moves[i][1].to)
+								{
+									int choice = this->choose_promotion(this->whose_turn);
+									if( in_range(choice, 0, 3))
+										this->make_move(available_moves[i+choice]);
+									break;
+								}
 								this->make_move(available_moves[i]);
 								break;
 							}

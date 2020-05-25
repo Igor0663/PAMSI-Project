@@ -8,7 +8,7 @@
 #define black_won 1
 #define white_won 0 
 #define game_ongoing -1
-#define max_depth 4
+#define max_depth 3
 
 class chess_game{
 		chessboard board;
@@ -34,7 +34,8 @@ class chess_game{
 		void undo_move();
 		int play();
 		piece* get_piece( unsigned int i, unsigned int j);
-		int get_game_status(){return this->game_status;}
+		int get_game_status()const{return this->game_status;}
+		int choose_promotion(bool color);
 };
 
 

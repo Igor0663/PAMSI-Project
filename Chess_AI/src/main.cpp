@@ -11,8 +11,8 @@ int main()
 	chess_game game(window);
 	int result = game.play();
 	if( result == black )
-		std::cout <<"Blacks won!";
+		std::cout <<"Blacks won!\n";
 	else if( result == white )
-		std::cout <<"Whites won!";
+		std::cout <<"Whites won!\n";
 	return 0;
 }
