@@ -5,7 +5,7 @@
 #define white 0
 #define black 1
 
-chess_game::chess_game(): board(chessboard()), score{0,0}, whose_turn(white), AI(0) 
+chess_game::chess_game(sf::RenderWindow& win): board(chessboard()), gui(win), score{0,0}, whose_turn(white), AI(0) 
 {
 	this->pieces.reserve(50);
 	this->game_status = game_ongoing;
@@ -343,78 +343,56 @@ int minimax(chess_game& game, bool maximizing, int color, int depth)
 }
 
 
-void chess_game::turn()
+int chess_game::play()
 {
 	std::string from, to;
-	std::pair< int, int> a, b;
-	if(this->whose_turn)
-	{
-		int ind = minimax(*this, false, black, 0);
-		this->possible_moves(this->whose_turn);
-		this->make_move(this->available_moves[ind]);
-		return;
-	}
+	std::pair< int, int> a ={-1, -1}, b = {-1, -1};
 
 	this->possible_moves(this->whose_turn);
-	bool good_move = false;
-	if(this->whose_turn)
-		std::cout << "Blacks' turn\n";
-	else
-		std::cout << "Whites' turn\n";
-	while(!good_move)
+	while(this->gui.AppWin.isOpen())
 	{
-		std::cin >> from >> to;
-		if( from == "r" and to == "r")
+		if(this->game_status != -1)
 		{
-			this->undo_move();
-			return;
+			this->gui.AppWin.close();
+			return this->game_status;
 		}
-		if( !check_input(from) or !check_input(to) )
+		this->possible_moves(this->whose_turn);
+		if(this->whose_turn)
 		{
-			std::cout << "Nie mozna wykonac takiego ruchu, sprobuj ponownie: \n";
-			continue;
+			int ind = minimax(*this, false, black, 0);
+			this->possible_moves(this->whose_turn);
+			this->make_move(this->available_moves[ind]);
 		}
-		a = {  '8' - from[1], toupper(from[0]) -'A'};
-		b = {  '8' - to[1], toupper(to[0]) - 'A'};
-		for(unsigned int i = 0; i < this->available_moves.size(); i++)
-			if(available_moves[i][0].from == a and available_moves[i][0].to == b)
+		sf::Event event;
+		while(this->gui.AppWin.pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed)
+                 		this->gui.AppWin.close();
+			if(event.type == sf::Event::MouseButtonPressed)
 			{
-				if(available_moves[i].size() == 2 and available_moves[i][1].from == available_moves[i][1].to)
+				if(event.mouseButton.button == sf::Mouse::Left)
 				{
-					//promotion case
-					char marks[] = {'q', 'n', 'b', 'r' };
-					char input;
-					bool check_input = false;
-					std::cout << "Promotion available, choose promotion piece( q, n, b, r): ";
-					do
+					int row = (int)((event.mouseButton.y - this->gui.board_offset.y)/this->gui.field_size.y);
+					int col = (int)((event.mouseButton.x - this->gui.board_offset.x)/this->gui.field_size.x);
+					std::cout << row << " " << col << "\n" << std::flush;
+					if( a == std::pair<int, int>(-1, -1))
+						a = { row, col };
+					else
 					{
-						std::cin >> input;
-						for(int j = 0; j < 4; j++)
-							if(input == marks[j])
-								check_input = true;
-						if(!check_input)
-							std::cout << "Wrong input, try again: ";
-					}while(!check_input);
-				       	
-					for(int j = 0; j < 4; j++)
-						if(input == marks[j])
+						b = { row, col };
+						for(unsigned int i = 0; i < this->available_moves.size(); i++)
 						{
-							this->make_move(available_moves[i+j]);
-							good_move = true;
-							break;
+							if(available_moves[i][0].from == a and available_moves[i][0].to == b)
+							this->make_move(available_moves[i]);
 						}
-					break;	
-				}
-				else
-				{
-					this->make_move(available_moves[i]);
-					good_move = true;
-					break;
+						a = {-1, -1};
+						b = {-1, -1};
+					}
 				}
 			}
-		if(!good_move)
-			std::cout << "Invalid move, try again: \n";
+		}
+		this->gui.display(this->board, this->pieces, this->pieces_pos);
 	}
-	return;
+	return game_ongoing;
 }
 

@@ -51,7 +51,7 @@ void chessboard::add_piece(unsigned int i, unsigned int j, piece* p)
 }
 
 
-void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces, std::vector< std::pair<int, int> >& pos )
+void chessboard::move_piece(const pos_move& mov, std::vector<piece>& pieces, std::vector< std::pair<int, int> >& pos )
 {
 	auto from = mov.from;
 	auto to = mov.to;
@@ -93,7 +93,7 @@ void chessboard::move_piece(pos_move mov, std::vector<piece>& pieces, std::vecto
 
 	return;
 }
-void chessboard::undo_move(pos_move mov, int ind, std::vector<piece>& pieces, std::vector<std::pair<int, int> >&  pos)
+void chessboard::undo_move(const pos_move& mov, int ind, std::vector<piece>& pieces, std::vector<std::pair<int, int> >&  pos)
 {
 	auto from = mov.from;
 	auto to = mov.to;

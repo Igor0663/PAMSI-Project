@@ -13,13 +13,13 @@ class piece
 		unsigned int points;
 		std::vector<move> allowed_moves;
 	public:
-		int get_NoM() {return this->NoM; }
+		int get_NoM() const {return this->NoM; }
 		void made_move(){this->NoM++;}
 		void undo_move(){this->NoM--;}
 		piece(bool color = 0): mark('x'), color(color), NoM(0), points(0) {}	
-		char get_mark(){return this->mark;}
-		bool get_color(){return this->color;}
-		unsigned int get_points(){return this->points;}
+		char get_mark() const {return this->mark;}
+		bool get_color() const {return this->color;}
+		unsigned int get_points() const {return this->points;}
 		const std::vector<move>& get_moves(){return allowed_moves;  }
 };
 

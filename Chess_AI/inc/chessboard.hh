@@ -30,8 +30,8 @@ class chessboard
 		chessboard(unsigned int N = 8);
 		void display();
 		void add_piece(unsigned int i, unsigned int j, piece* p);
-		void undo_move(pos_move mov, int ind, std::vector<piece>& pieces, std::vector<std::pair<int, int> >& pos);
-		void move_piece(pos_move mov, std::vector<piece>& pieces, std::vector<std::pair<int, int> >& pos);
+		void undo_move(const pos_move& mov, int ind, std::vector<piece>& pieces, std::vector<std::pair<int, int> >& pos);
+		void move_piece(const pos_move& mov, std::vector<piece>& pieces, std::vector<std::pair<int, int> >& pos);
 		piece* get_piece(unsigned int i, unsigned int j){return this->fields(i,j).get_piece();  }
 };
 

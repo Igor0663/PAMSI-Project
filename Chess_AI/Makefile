@@ -1,8 +1,9 @@
 CXXFLAGS=-g -Iinc -Wall -pedantic -std=c++0x
 
-chess:   obj obj/main.o obj/chess_game.o obj/chessboard.o obj/field.o obj/pieces.o obj/move.o
-	g++ -Wall -pedantic -std=c++0x -fsanitize=address -o chess obj/main.o obj/chess_game.o \
-		obj/chessboard.o obj/field.o obj/pieces.o obj/move.o
+chess:   obj obj/main.o obj/chess_game.o obj/chessboard.o obj/field.o obj/pieces.o obj/move.o obj/gui.o
+	g++ -Wall -pedantic -std=c++0x -o chess obj/main.o obj/chess_game.o \
+		obj/chessboard.o obj/field.o obj/pieces.o obj/move.o obj/gui.o \
+		-lsfml-graphics -lsfml-window -lsfml-system
 	rm -r obj
 						
 obj:
@@ -26,6 +27,8 @@ obj/pieces.o: src/pieces.cpp inc/pieces.hh inc/move.hh
 obj/move.o: src/move.cpp inc/move.hh
 	g++ -c ${CXXFLAGS} -o obj/move.o src/move.cpp	
 
+obj/gui.o: src/gui.cpp inc/gui.hh inc/chessboard.hh
+	g++ -c ${CXXFLAGS} -o obj/gui.o src/gui.cpp
+
 clear:
-	rm -f obj/*.o chess
 	rm -r obj

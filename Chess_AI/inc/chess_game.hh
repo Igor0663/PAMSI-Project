@@ -2,6 +2,7 @@
 #define CHESS_GAME_HH
 
 #include"chessboard.hh"
+#include"gui.hh"
 #include<vector>
 #include<stack>
 #define black_won 1
@@ -11,6 +12,7 @@
 
 class chess_game{
 		chessboard board;
+		GUI gui;
 		std::vector<piece> pieces;
 		std::vector<std::pair<int, int> > pieces_pos;
 
@@ -22,7 +24,7 @@ class chess_game{
 		bool AI;
 		int game_status;
 	public:
-		chess_game();
+		chess_game(sf::RenderWindow& win);
 		void display(){this->board.display(); }
 		const std::vector< std::vector<pos_move > > & possible_moves(bool color);
 		void check_castling(bool color);
@@ -30,7 +32,7 @@ class chess_game{
 		void make_move( const std::vector<pos_move>& move);
 		int evaluate_board();
 		void undo_move();
-		void turn();
+		int play();
 		piece* get_piece( unsigned int i, unsigned int j);
 		int get_game_status(){return this->game_status;}
 };
