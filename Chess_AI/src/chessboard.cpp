@@ -90,7 +90,7 @@ void chessboard::move_piece(const pos_move& mov, std::vector<piece>& pieces, std
 		pos[ind_pawn] = {-1, -1};
 		this->fields(to.first, to.second).set_piece(&pieces.back());
 	}
-
+	
 	return;
 }
 void chessboard::undo_move(const pos_move& mov, int ind, std::vector<piece>& pieces, std::vector<std::pair<int, int> >&  pos)

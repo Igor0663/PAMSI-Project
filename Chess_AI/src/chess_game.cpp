@@ -356,13 +356,12 @@ int chess_game::play()
 			this->gui.AppWin.close();
 			return this->game_status;
 		}
-		this->possible_moves(this->whose_turn);
-		if(this->whose_turn)
+	/*	if(this->whose_turn)
 		{
 			int ind = minimax(*this, false, black, 0);
 			this->possible_moves(this->whose_turn);
 			this->make_move(this->available_moves[ind]);
-		}
+		}*/
 		sf::Event event;
 		while(this->gui.AppWin.pollEvent(event))
 		{
@@ -374,16 +373,20 @@ int chess_game::play()
 				{
 					int row = (int)((event.mouseButton.y - this->gui.board_offset.y)/this->gui.field_size.y);
 					int col = (int)((event.mouseButton.x - this->gui.board_offset.x)/this->gui.field_size.x);
-					std::cout << row << " " << col << "\n" << std::flush;
+					//std::cout << row << " " << col << "\n" << std::flush;
 					if( a == std::pair<int, int>(-1, -1))
 						a = { row, col };
 					else
 					{
 						b = { row, col };
+						this->possible_moves(this->whose_turn);
 						for(unsigned int i = 0; i < this->available_moves.size(); i++)
 						{
 							if(available_moves[i][0].from == a and available_moves[i][0].to == b)
-							this->make_move(available_moves[i]);
+							{
+								this->make_move(available_moves[i]);
+								break;
+							}
 						}
 						a = {-1, -1};
 						b = {-1, -1};
