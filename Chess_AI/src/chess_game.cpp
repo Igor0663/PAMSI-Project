@@ -5,7 +5,7 @@
 #define white 0
 #define black 1
 
-chess_game::chess_game(sf::RenderWindow& win): board(chessboard()), gui(win), score{0,0}, whose_turn(white), AI(0) 
+chess_game::chess_game(sf::RenderWindow& win): board(chessboard()), gui(win), whose_turn(white), AI(0) 
 {
 	this->pieces.reserve(50);
 	this->game_status = game_ongoing;
@@ -221,23 +221,6 @@ void chess_game::make_move( const std::vector<pos_move>& move)
 		{
 			ind = (p - &(this->pieces[0]));
 			int color = p->get_color();
-			if(move[i].from != move[i].to)	
-			{
-				this->score[!color] += p->get_points();
-			}
-			else
-			{
-				int points;
-				switch(move[i].promotion)
-				{
-					case 'r': points = rook(white).get_points(); break;
-					case 'n': points = knight(white).get_points(); break;
-					case 'b': points = bishop(white).get_points(); break;
-					case 'q': points = queen(white).get_points(); break;
-					default: std::cerr << "Undefined piece to promote into\n";
-				}
-				this->score[color] += points - 1;
-			}
 			if(p->get_mark() == 'k')
 				this->game_status = !color;
 		}
@@ -261,29 +244,7 @@ void chess_game::undo_move()
 	{
 		int ind = last_move[i].second;
 		pos_move move = last_move[i].first;
-		if(ind != -1)
-		{
-			piece* p = &this->pieces[ind];
-			int color = p->get_color();
-			if(move.from != move.to)	
-			{
-				this->score[!color] -= p->get_points();
-			}
-			else
-			{
-				int points;
-				switch(move.promotion)
-				{
-					case 'r': points = rook(white).get_points(); break;
-					case 'n': points = knight(white).get_points(); break;
-					case 'b': points = bishop(white).get_points(); break;
-					case 'q': points = queen(white).get_points(); break;
-					default: std::cerr << "Undefined piece to promote into\n";
-				}
-				this->score[color] -= points - 1;
-			}
-		}
-		this->board.undo_move(last_move[i].first, last_move[i].second, this->pieces, this->pieces_pos);
+		this->board.undo_move(move, ind, this->pieces, this->pieces_pos);
 	}
 	this->whose_turn = !this->whose_turn;
 	this->game_status = game_ongoing;
@@ -302,16 +263,28 @@ bool check_input(std::string S)
 
 int chess_game::evaluate_board()
 {
-	return this->score[white] - this->score[black];
+	int score[2] = {0, 0}, eval = 0;// - 0 whites' score, 1 blacks' score
+
+	for(unsigned int i = 0; i < this->pieces.size(); i++)
+	{
+		std::pair<int, int> pos = this->pieces_pos[i];
+		piece p = this->pieces[i];
+		int color = p.get_color();
+		if(pos == std::pair<int, int>(-1, -1))
+			continue;
+		score[color]+=p.get_points();
+	}
+	eval = score[0] - score[1];
+	return eval;
 }
 
-int minimax(chess_game& game, bool maximizing, int color, int depth)
+int minimax(chess_game& game,int alpha, int beta, bool maximizing, int color, int depth)
 {
 	int result, move = 0;
 	if(maximizing)
-		result = -20000;
+		result = -inf;
 	else
-		result = 20000;
+		result = inf;
 	int s = game.get_game_status();
 	if( depth == max_depth or s != -1 )
 		return game.evaluate_board();
@@ -319,7 +292,7 @@ int minimax(chess_game& game, bool maximizing, int color, int depth)
 	for(unsigned int i = 0; i < moves.size();i++)
 	{
 		game.make_move(moves[i]);
-		int new_res = minimax(game, !maximizing, !color, depth + 1);
+		int new_res = minimax(game, alpha, beta, !maximizing, !color, depth + 1);
 		if(maximizing)
 		{
 			if(new_res > result)
@@ -327,14 +300,20 @@ int minimax(chess_game& game, bool maximizing, int color, int depth)
 				result = new_res;
 				move = i;
 			}
+			alpha = std::max(new_res, alpha);
 		}
 		else
+		{
 			if(new_res < result)
 			{
 				result = new_res;
 				move = i;
 			}
+			beta = std::min(new_res, beta);
+		}
 		game.undo_move();
+		if(beta <= alpha)
+			break;
 	}
 	if(depth == 0)
 		return move;
@@ -402,7 +381,7 @@ int chess_game::play()
 		}
 		if(this->whose_turn)
 		{
-			int ind = minimax(*this, false, black, 0);
+			int ind = minimax(*this,-inf, inf, false, black, 0);
 			this->possible_moves(this->whose_turn);
 			this->make_move(this->available_moves[ind]);
 		}

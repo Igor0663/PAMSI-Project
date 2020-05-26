@@ -8,7 +8,8 @@
 #define black_won 1
 #define white_won 0 
 #define game_ongoing -1
-#define max_depth 3
+#define max_depth 4
+#define inf 100000
 
 class chess_game{
 		chessboard board;
@@ -18,7 +19,6 @@ class chess_game{
 
 		std::vector< std::vector<pos_move > > available_moves; 
 
-		unsigned int score[2]; // 0 - whites', 1 - blacks'
 		std::stack< std::vector< std::pair< pos_move, int> > > history;
 		bool whose_turn;
 		bool AI;
