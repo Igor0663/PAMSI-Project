@@ -23,6 +23,7 @@ class chess_game{
 		bool whose_turn;
 		bool AI;
 		int game_status;
+		int pos_pts[6][8][8]; //0 - pawn, 1 - rook, 2 - knight, 3 - bishop, 4 - queen, 5 - king
 	public:
 		chess_game(sf::RenderWindow& win);
 		void display(){this->board.display(); }

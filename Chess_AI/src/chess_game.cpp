@@ -49,6 +49,78 @@ chess_game::chess_game(sf::RenderWindow& win): board(chessboard()), gui(win), wh
 		this->board.add_piece(7, j, &(this->pieces[24+j]));
 		this->pieces_pos.push_back({7,j});
 	}
+	//pawn
+	int array_pawn[8][8] = { { 0,  0,  0,  0,  0,  0,  0,  0},
+			         {50, 50, 50, 50, 50, 50, 50, 50},
+			    	 {10, 10, 20, 30, 30, 20, 10, 10},
+ 			    	 { 5,  5, 10, 25, 25, 10,  5,  5},
+ 			    	 { 0,  0,  0, 20, 20,  0,  0,  0},
+			    	 { 5, -5,-10,  0,  0,-10, -5,  5},
+ 			    	 { 5, 10, 10,-20,-20, 10, 10,  5},
+ 			    	 { 0,  0,  0,  0,  0,  0,  0,  0} };
+	for(unsigned int i = 0; i < 8; i++)
+		for(unsigned int j = 0; j < 8;j++)
+			this->pos_pts[0][i][j] = array_pawn[i][j];
+	//rook
+	int array_rook[8][8] = { { 0,  0,  0,  0,  0,  0,  0,  0},
+			    	 { 5, 10, 10, 10, 10, 10, 10,  5},
+			    	 {-5,  0,  0,  0,  0,  0,  0, -5},
+ 			    	 {-5,  0,  0,  0,  0,  0,  0, -5},
+ 			    	 {-5,  0,  0,  0,  0,  0,  0, -5},
+			    	 {-5,  0,  0,  0,  0,  0,  0, -5},
+ 			    	 {-5,  0,  0,  0,  0,  0,  0, -5},
+ 			    	 { 0,  0,  0,  5,  5,  0,  0,  0} };
+	for(unsigned int i = 0; i < 8; i++)
+		for(unsigned int j = 0; j < 8;j++)
+			this->pos_pts[1][i][j] = array_rook[i][j];
+	//knight
+	int array_knight[8][8] = { {-50,-40,-30,-30,-30,-30,-40,-50},
+			     	   {-40,-20,  0,  0,  0,  0,-40,-20},
+				   {-30,  0, 10, 15, 15, 10,  0,-30},
+ 			           {-30,  5, 15, 20, 20, 15,  5,-30},
+ 			           {-30,  0, 15, 20, 20, 15,  0,-30},
+			           {-30,  5, 15, 15, 15, 10,  5,-30},
+ 			           {-40,-20,  0,  5,  5,  0,-20,-40},
+ 			           {-50,-40,-30,-30,-30,-30,-40,-50} };
+	for(unsigned int i = 0; i < 8; i++)
+		for(unsigned int j = 0; j < 8;j++)
+			this->pos_pts[1][i][j] = array_knight[i][j];
+	//bishop
+	int array_bishop[8][8] = { {-20,-10,-10,-10,-10,-10,-10,-20},
+			     	   {-10,  0,  0,  0,  0,  0,  0,-10},
+			           {-10,  0,  5, 10, 10,  5,  0,-10},
+ 			           {-10,  5,  5, 10, 10,  5,  5,-10},
+ 			           {-10,  0, 10, 10, 10, 10,  0,-10},
+			           {-10, 10, 10, 10, 10, 10, 10,-10},
+ 			           {-10,  5,  0,  0,  0,  0,  5,-10},
+ 			           {-20,-10,-10,-10,-10,-10,-10,-20} };
+	for(unsigned int i = 0; i < 8; i++)
+		for(unsigned int j = 0; j < 8;j++)
+			this->pos_pts[2][i][j] = array_bishop[i][j];
+	//queen
+	int array_queen[8][8] = { {-20,-10,-10, -5, -5,-10,-10,-20},
+			          {-10,  0,  0,  0,  0,  0,  0,-10},
+			          {-10,  0,  5,  5,  5,  5,  0,-10},
+ 			          { -5,  0,  5,  5,  5,  5,  0, -5},
+ 			          {  0,  0,  5,  5,  5,  5,  0, -5},
+			          {-10,  5,  5,  5,  5,  5,  0,-10},
+ 			          {-10,  0,  5,  0,  0,  0,  0,-10},
+ 			          {-20,-10,-10, -5, -5,-10,-10, 20} };
+	for(unsigned int i = 0; i < 8; i++)
+		for(unsigned int j = 0; j < 8;j++)
+			this->pos_pts[3][i][j] = array_queen[i][j];
+	//king
+	int array_king[8][8] = { {-30,-40,-40,-50,-50,-40,-40,-30},
+			         {-30,-40,-40,-50,-50,-40,-40,-30},
+			         {-30,-40,-40,-50,-50,-40,-40,-30},
+ 			         {-30,-40,-40,-50,-50,-40,-40,-30},
+ 			         {-20,-30,-30,-40,-40,-30,-30,-20},
+			         {-10,-20,-20,-20,-20,-20,-20,-10},
+ 			         { 20, 20,  0,  0,  0,  0, 20, 20},
+ 			         { 20, 30, 10,  0,  0, 10, 30, 20} };
+	for(unsigned int i = 0; i < 8; i++)
+		for(unsigned int j = 0; j < 8;j++)
+			this->pos_pts[4][i][j] = array_king[i][j];
 }
 
 piece* chess_game::get_piece( unsigned int i, unsigned int j)
@@ -202,10 +274,8 @@ const std::vector< std::vector<pos_move > >& chess_game::possible_moves(bool col
 		}
 	}
 
-	this->check_castling(black);
-	this->check_castling(white);
-	this->check_promotion(black);
-	this->check_promotion(white);
+	this->check_castling(color);
+	this->check_promotion(color);
 	return this->available_moves;
 }
 
@@ -270,11 +340,27 @@ int chess_game::evaluate_board()
 		std::pair<int, int> pos = this->pieces_pos[i];
 		piece p = this->pieces[i];
 		int color = p.get_color();
+		int mark = p.get_mark();
+		int ind;
 		if(pos == std::pair<int, int>(-1, -1))
 			continue;
+		switch(mark)
+		{
+			case 'p': ind = 0; break;
+			case 'r': ind = 1; break;
+			case 'n': ind = 2; break;
+			case 'b': ind = 3; break;
+			case 'q': ind = 4; break;
+			case 'k': ind = 5; break;
+			default: std::cerr <<"Unknown piece type.\n";
+		}
+	//	if(color == black)
+	//		eval -= pos_pts[ind][7 - pos.second][7-pos.second];
+	//	else
+	//		eval += pos_pts[ind][pos.first][pos.second];
 		score[color]+=p.get_points();
 	}
-	eval = score[0] - score[1];
+	eval += score[0] - score[1];
 	return eval;
 }
 
