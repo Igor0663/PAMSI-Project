@@ -54,7 +54,22 @@ void GUI::display(const chessboard& board, const std::vector<piece>& pieces, con
 		sprite.setPosition(this->board_offset + pos + cor);
 		this->AppWin.draw(sprite);
 	}	
-	
 	this->AppWin.display();
 	return;
+}
+
+void GUI::draw_marker(int y, int x, sf::Color color, bool update)
+{
+
+	sf::Vector2f cor(3,3);
+	sf::RectangleShape marker(this->field_size - cor);
+	sf::Vector2f pos = this->board_offset + sf::Vector2f(x * this->field_size.x, this->field_size.y * y) + cor/float(2.0);
+
+	marker.setPosition(pos);
+	marker.setFillColor(sf::Color(0, 0, 0, 0));
+	marker.setOutlineColor(color);
+	marker.setOutlineThickness(2);
+	this->AppWin.draw(marker);
+	if(update)
+		this->AppWin.display();
 }
