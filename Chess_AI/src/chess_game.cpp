@@ -49,7 +49,7 @@ chess_game::chess_game(sf::RenderWindow& win): board(chessboard()), gui(win), wh
 		this->board.add_piece(7, j, &(this->pieces[24+j]));
 		this->pieces_pos.push_back({7,j});
 	}
-	//pawn
+
 	int array_pawn[8][8] = { { 0,  0,  0,  0,  0,  0,  0,  0},
 			         {50, 50, 50, 50, 50, 50, 50, 50},
 			    	 {10, 10, 20, 30, 30, 20, 10, 10},

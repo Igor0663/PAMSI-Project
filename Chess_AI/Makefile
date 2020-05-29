@@ -3,7 +3,8 @@ CXXFLAGS=-g -Iinc -Wall -pedantic -std=c++0x
 chess:   obj obj/main.o obj/chess_game.o obj/chessboard.o obj/field.o obj/pieces.o obj/move.o obj/gui.o
 	g++ -Wall -pedantic -std=c++0x -o chess obj/main.o obj/chess_game.o \
 		obj/chessboard.o obj/field.o obj/pieces.o obj/move.o obj/gui.o \
-		-lsfml-graphics -lsfml-window -lsfml-system
+		/usr/lib/x86_64-linux-gnu/libsfml-graphics.so /usr/lib/x86_64-linux-gnu/libsfml-window.so \
+		/usr/lib/x86_64-linux-gnu/libsfml-system.so 
 	rm -r obj
 						
 obj:
