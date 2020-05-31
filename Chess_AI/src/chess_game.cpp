@@ -529,7 +529,7 @@ int chess_game::play()
 									}
 									break;
 								}
-								this->make_move(available_moves[i]);
+								his->make_move(available_moves[i]);
 								this->gui.display(this->board, this->pieces, this->pieces_pos);
 								this->possible_moves(this->whose_turn);
 								a = {-1, -1};
