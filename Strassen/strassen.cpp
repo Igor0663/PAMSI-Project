@@ -26,12 +26,10 @@ void read_input(matrix<T>& A, matrix<T>& B)
 }
 
 template<typename T>
-matrix<T> strassen_mult(const matrix<T>& A, const matrix<T>& B, unsigned int pow)
+matrix<T> strassen_mult(const matrix<T>& A, const matrix<T>& B, unsigned int pow, bool top = true)
 {
-	if(pow == 1)
-	{
+	if(pow <= 32)
 		return A * B;
-	}
 
 	matrix<T> A11(pow/2, pow/2);
 	matrix<T> A12(pow/2, pow/2);
@@ -56,59 +54,64 @@ matrix<T> strassen_mult(const matrix<T>& A, const matrix<T>& B, unsigned int pow
 			B21(i, j) = B(i + pow/2, j);
 			B22(i, j) = B(i + pow/2, j + pow/2);
 		}
+	matrix<T> M1;
+	matrix<T> M2;
+	matrix<T> M3;
+	matrix<T> M4;
+	matrix<T> M5;
+	matrix<T> M6;
+	matrix<T> M7;
+	
 	matrix<T> A1122 = A11 + A22, B1122 = B11 + B22;
-	future< matrix<T> > resultM1 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A1122, B1122, pow/2);
-	//matrix<T> M1 = strassen_mult(A1122, B1122, pow/2);
-	
 	matrix<T> A2122 = A21 + A22;
-	future< matrix<T> > resultM2 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A2122, B11, pow/2);
-	//matrix<T> M2 = strassen_mult(A2122, B11, pow/2);
-	
 	matrix<T> B12m22 = B12 - B22;
-	future< matrix<T> > resultM3 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A11, B12m22, pow/2);
-	//matrix<T> M3 = strassen_mult(A11, B12m22, pow/2);
-
 	matrix<T> B21m11 = B21 - B11;
-	future< matrix<T> > resultM4 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A22, B21m11, pow/2);
-	//matrix<T> M4 = strassen_mult(A22, B21m11, pow/2);
-
 	matrix<T> A1112 = A11 + A12;
-	future< matrix<T> > resultM5 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A1112, B22, pow/2);
-	//matrix<T> M5 = strassen_mult(A1112, B22, pow/2);
-
 	matrix<T> A21m11 = A21 - A11, B1112 = B11 + B12;
-	future< matrix<T> > resultM6 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A21m11, B1112, pow/2);
-	//matrix<T> M6 = strassen_mult(A21m11, B1112, pow/2);
-
 	matrix<T> A12m22 = A12 - A22, B2122 = B21 + B22;
-	future< matrix<T> > resultM7 = async(launch::async, static_cast<matrix<T>(*)(const matrix<T>&, const matrix<T>&, unsigned int)>(&strassen_mult), A12m22, B2122, pow/2);
-	//matrix<T> M7 = strassen_mult(A12m22, B2122, pow/2);
+	
+	if(top)
+	{
+		auto resultM1 = async(&strassen_mult<T>, A1122, B1122, pow/2, false);
+		auto resultM2 = async(&strassen_mult<T>, A2122, B11, pow/2, false);
+		auto resultM3 = async(&strassen_mult<T>, A11, B12m22, pow/2, false);
+		auto resultM4 = async(&strassen_mult<T>, A22, B21m11, pow/2, false);
+		auto resultM5 = async(&strassen_mult<T>, A1112, B22, pow/2, false);
+		auto resultM6 = async(&strassen_mult<T>, A21m11, B1112, pow/2, false);
+		auto resultM7 = async(&strassen_mult<T>, A12m22, B2122, pow/2, false);
 
-	matrix<T> M1 = resultM1.get();
-	matrix<T> M2 = resultM2.get();
-	matrix<T> M3 = resultM3.get();
-	matrix<T> M4 = resultM4.get();
-	matrix<T> M5 = resultM5.get();
-	matrix<T> M6 = resultM6.get();
-	matrix<T> M7 = resultM7.get();
-
-	matrix<T> C11 = M1 + M4 - M5 + M7;
-	matrix<T> C12 = M3 + M5;
-	matrix<T> C21 = M2 + M4;
-	matrix<T> C22 = M1 - M2 + M3 + M6;
+		M1 = resultM1.get();
+		M2 = resultM2.get();
+		M3 = resultM3.get();
+		M4 = resultM4.get();
+		M5 = resultM5.get();
+		M6 = resultM6.get();
+		M7 = resultM7.get();
+	}
+	else
+	{
+		M1 = strassen_mult(A1122, B1122, pow/2, false);
+		M2 = strassen_mult(A2122, B11, pow/2, false);
+		M3 = strassen_mult(A11, B12m22, pow/2, false);
+		M4 = strassen_mult(A22, B21m11, pow/2, false);
+		M5 = strassen_mult(A1112, B22, pow/2, false);
+		M6 = strassen_mult(A21m11, B1112, pow/2, false);
+		M7 = strassen_mult(A12m22, B2122, pow/2, false);
+	}
 
 	matrix<T> C(pow, pow);
 	for(unsigned int i = 0; i < C.size().first; i++)
 		for(unsigned int j = 0; j < C.size().second; j++)
 		{
 			if(i < pow/2 and j < pow/2)
-				C(i, j) = C11(i, j);
+				C(i, j) = M1(i, j) + M4(i, j) - M5(i, j) + M7(i, j);
 			else if(i < pow/2 and j >= pow/2)
-				C(i, j) = C12(i, j - pow/2);
+				C(i, j) = M3(i, j - pow/2) + M5(i, j - pow/2);
 			else if(i >= pow/2 and j < pow/2)
-				C(i, j) = C21(i - pow/2, j);
+				C(i, j) = M2(i - pow/2, j) + M4(i - pow/2, j);
 			else
-				C(i, j) = C22(i - pow/2, j - pow/2);
+				C(i, j) = M1(i - pow/2, j - pow/2) - M2(i - pow/2, j - pow/2) + M3(i - pow/2, j - pow/2) + M6(i - pow/2, j - pow/2);
+
 		}
 	return C;
 }
@@ -154,7 +157,8 @@ int main()
 	auto strassen_time = chrono::duration_cast<chrono::seconds>(strassen_end - strassen_start);
 	auto mult_time = chrono::duration_cast<chrono::seconds>(mult_end - mult_start);
 
-	std::cout << "Mult time:     " << mult_time.count() << "seconds\n";
-	std::cout << "Strassen time: " << strassen_time.count() << "seconds\n";
+	cout << "Mult time:     " << mult_time.count() << "seconds\n";
+	cout << "Strassen time: " << strassen_time.count() << "seconds\n";
+	//cout << "\n" << C_strassen;
 	return 0;
 }
